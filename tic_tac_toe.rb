@@ -1,8 +1,10 @@
-class Board_printer
+class Line_printer
+  #prints two intersecting lines to the console
   def self.print
     puts "_|_|_"
     puts "_|_|_"
     puts " | | "
   end
 end
-Board_printer.print
+
+Line_printer.print

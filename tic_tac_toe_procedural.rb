@@ -56,13 +56,15 @@ def set_mark(mark)
     puts "error - bad mark"
   end
 end
-def is_game_over?(board_hash)
+
+def is_game_over?(board_hash, recent_mark)
+  #test win conditions
   #horizontal top row win con
   top_left = board_hash[:top_left]
   top_middle = board_hash[:top_middle]
   top_right = board_hash[:top_right]
   first_row = [top_left, top_middle, top_right]
-  return first_row.all? {|mark| mark == 'X'} 
+  return first_row.all? {|mark| mark == recent_mark} 
 end
 
 ####end of  of function definitons####
@@ -95,9 +97,9 @@ while game_not_over
   board_hash["#{input}".to_sym] = mark
   print_board(board_hash)
   #set up for next move 
-  mark = set_mark(mark)
-  if is_game_over?(board_hash)
+  if is_game_over?(board_hash, mark)
     puts "game over"
     break
   end
+  mark = set_mark(mark)
 end

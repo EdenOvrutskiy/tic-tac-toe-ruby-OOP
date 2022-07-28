@@ -91,24 +91,77 @@ board_hash =
 #draw the board based on the initial hash info
 print_board(board_hash)
 
-#play a game
-game_not_over = true
-mark = 'X'  #initial mark
-while game_not_over
-  puts "#{mark}'s turn"
-  input = gets.chomp.to_sym
-  #check if input is correct
-  while valid_input?(input, board_hash) == false
+def play_a_game(board_hash)
+  game_not_over = true
+  mark = 'X'  #initial mark
+  while game_not_over
+    puts "#{mark}'s turn"
     input = gets.chomp.to_sym
+    #check if input is correct
+    while valid_input?(input, board_hash) == false
+      input = gets.chomp.to_sym
+    end
+    #display the move
+    #use the input to change the correct board_hash entry
+    board_hash["#{input}".to_sym] = mark
+    print_board(board_hash)
+    #set up for next move 
+    if is_game_over?(board_hash, mark)
+      puts "game over"
+      break
+    end
+    mark = set_mark(mark)
   end
-  #display the move
-  #use the input to change the correct board_hash entry
-  board_hash["#{input}".to_sym] = mark
-  print_board(board_hash)
-  #set up for next move 
-  if is_game_over?(board_hash, mark)
-    puts "game over"
-    break
-  end
-  mark = set_mark(mark)
 end
+
+def play_an_automatic_game(moves)
+  #reset board
+  board_hash =
+    {
+      top_left: "_",top_middle: "_", top_right: "_",
+      middle_left: "_", middle_middle: "_", middle_right: "_",
+      bottom_left: " ", bottom_middle: " ", bottom_right: " ",
+    }
+  #automate inputs
+  game_not_over = true
+  mark = 'X'  #initial mark
+  for move in moves do
+    sleep 0.5
+    puts "#{mark}'s turn"
+    input = move.to_sym
+    #check if input is correct
+    unless valid_input?(input, board_hash)
+      next
+    end
+    #display the move
+    #use the input to change the correct board_hash entry
+    board_hash["#{input}".to_sym] = mark
+    print_board(board_hash)
+    #set up for next move 
+    if is_game_over?(board_hash, mark)
+      puts "game over"
+      break
+    end
+    mark = set_mark(mark)
+  end
+end
+
+def test_program
+  top_row_win_x = [
+    "top_right", "bottom_right",
+    "top_middle", "bottom_middle",
+    "top_left", "bottom_left"
+  ]
+  middle_row_win_o = [
+    'bottom_left', 'middle_left',
+    'top_left', 'middle_middle',
+    'bottom_right', 'middle_right'
+  ]
+  games = [top_row_win_x, middle_row_win_o]
+  for game in games
+    play_an_automatic_game(game)
+  end
+end
+
+test_program
+#play_a_game(board_hash)

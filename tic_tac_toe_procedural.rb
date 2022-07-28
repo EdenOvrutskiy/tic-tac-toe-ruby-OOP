@@ -65,16 +65,31 @@ def is_game_over?(board_hash, recent_mark)
   middle_left = board_hash[:middle_left]
   middle_middle = board_hash[:middle_middle]
   middle_right = board_hash[:middle_right]
+  bottom_left = board_hash[:bottom_left]
+  bottom_middle = board_hash[:bottom_middle]
+  bottom_right = board_hash[:bottom_right]
   #test win conditions
+
   #horizontal top row win con
   first_row = [top_left, top_middle, top_right]
-  first_row_win_con = first_row.all? {|mark| mark == recent_mark} 
+  #  first_row_win_con = first_row.all? {|mark| mark == recent_mark}
   #middle row win con
   middle_row = [middle_left, middle_middle, middle_right]
-  middle_row_win_con = middle_row.all? {|mark| mark == recent_mark}
-  return (middle_row_win_con ||
-              first_row_win_con)
+  #middle_row_win_con = middle_row.all? {|mark| mark == recent_mark}
+  #bottom row win con
+  bottom_row = [bottom_left, bottom_middle, bottom_right]
+  #gather all the tile_sets required for checking win conditions
+  tile_sets= [first_row, middle_row]
+  #see if any of them
+  game_over =
+    tile_sets.any? do |set|
+    #are filled with the same mark
+    set.all? {|mark| mark == recent_mark}
   end
+  #if so, the game is over
+  return game_over
+end
+
 
 ####end of  of function definitons####
 
@@ -157,7 +172,11 @@ def test_program
     'top_left', 'middle_middle',
     'bottom_right', 'middle_right'
   ]
-  games = [top_row_win_x, middle_row_win_o]
+  bad_game = [
+    'bottom_left', 'bottom_left', #trying to overwrite move
+    'bottom_right', 'bottom_right'
+  ]
+  games = [top_row_win_x, middle_row_win_o, bad_game]
   for game in games
     play_an_automatic_game(game)
   end
@@ -165,3 +184,5 @@ end
 
 test_program
 #play_a_game(board_hash)
+
+

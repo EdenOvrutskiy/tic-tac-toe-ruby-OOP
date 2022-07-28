@@ -112,3 +112,7 @@ while game_not_over
   end
   mark = set_mark(mark)
 end
+
+def test_program
+  
+end

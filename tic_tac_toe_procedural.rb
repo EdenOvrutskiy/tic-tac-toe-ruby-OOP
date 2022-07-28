@@ -9,226 +9,220 @@ def print_welcome_messages
   puts "for example: 'top_middle'"
 end
 
- def print_board(board_hash)
-  first_row = ''
-  first_row << board_hash[:top_left]
-  first_row << "|"
-  first_row << board_hash[:top_middle] 
-  first_row << "|"
-  first_row << board_hash[:top_right]
-  second_row = ''
-  second_row <<  board_hash[:middle_left] 
-  second_row << "|"
-  second_row <<  board_hash[:middle_middle] 
-  second_row << "|"
-  second_row <<  board_hash[:middle_right]
-  third_row = ''
-  third_row << board_hash[:bottom_left]
-  third_row << '|'
-  third_row << board_hash[:bottom_middle]
-  third_row << '|'
-  third_row << board_hash[:bottom_right]
+def print_board(board_hash)
+  top_left = board_hash[:top_left]
+  top_middle = board_hash[:top_middle]
+  top_right = board_hash[:top_right]
+  middle_left =  board_hash[:middle_left] 
+  middle_middle =  board_hash[:middle_middle] 
+  middle_right = board_hash[:middle_right]
+  bottom_left = board_hash[:bottom_left]
+  bottom_middle = board_hash[:bottom_middle]
+  bottom_right = board_hash[:bottom_right]
 
-  for row in [first_row, second_row, third_row]
-    puts row
+  first_row = '' << top_left << '|' << top_middle << '|' << top_right
+  second_row = '' << middle_left << '|' << middle_middle << '|' << middle_right
+  third_row = '' << bottom_left << '|' << bottom_middle << '|' << bottom_right
+
+  #print board
+  [first_row, second_row, third_row].each {|row| puts row}
+end
+
+def valid_input?(input, board_hash)
+  target_tile_value = board_hash["#{input}".to_sym]
+  if board_hash.include?(input) == false
+    puts "bad input! target-tile name mispelled"
+    return false
+  elsif (target_tile_value == 'X' || target_tile_value == 'O')
+    puts "bad input! can't overwrite a previous move"
+    return false
+  else
+    return true
+  end
+end
+#determine whose turn it is
+#based on the previous turn
+def set_mark(mark)
+  case mark
+  when 'X' then 'O'
+  when 'O' then 'X'
+  else
+    puts "error - bad mark"
   end
 end
 
- def valid_input?(input, board_hash)
-   target_tile_value = board_hash["#{input}".to_sym]
-   if board_hash.include?(input) == false
-     puts "bad input! target-tile name mispelled"
-     return false
-   elsif (target_tile_value == 'X' || target_tile_value == 'O')
-     puts "bad input! can't overwrite a previous move"
-     return false
-   else
-     return true
-   end
- end
- #determine whose turn it is
- #based on the previous turn
- def set_mark(mark)
-   case mark
-   when 'X' then 'O'
-   when 'O' then 'X'
-   else
-     puts "error - bad mark"
-   end
- end
+def is_game_over?(board_hash, recent_mark)
+  #list all cells
+  top_left = board_hash[:top_left]
+  top_middle = board_hash[:top_middle]
+  top_right = board_hash[:top_right]
+  middle_left = board_hash[:middle_left]
+  middle_middle = board_hash[:middle_middle]
+  middle_right = board_hash[:middle_right]
+  bottom_left = board_hash[:bottom_left]
+  bottom_middle = board_hash[:bottom_middle]
+  bottom_right = board_hash[:bottom_right]
+  #test win conditions
 
- def is_game_over?(board_hash, recent_mark)
-   #list all cells
-   top_left = board_hash[:top_left]
-   top_middle = board_hash[:top_middle]
-   top_right = board_hash[:top_right]
-   middle_left = board_hash[:middle_left]
-   middle_middle = board_hash[:middle_middle]
-   middle_right = board_hash[:middle_right]
-   bottom_left = board_hash[:bottom_left]
-   bottom_middle = board_hash[:bottom_middle]
-   bottom_right = board_hash[:bottom_right]
-   #test win conditions
+  #horizontal rows
+  top_row = [top_left, top_middle, top_right]
+  middle_row = [middle_left, middle_middle, middle_right]
+  bottom_row = [bottom_left, bottom_middle, bottom_right]
 
-   #horizontal rows
-   top_row = [top_left, top_middle, top_right]
-   middle_row = [middle_left, middle_middle, middle_right]
-   bottom_row = [bottom_left, bottom_middle, bottom_right]
+  #vertical columns
+  left_column = [top_left, middle_left, bottom_left]
+  middle_column = [top_middle, middle_middle, bottom_middle]
+  right_column = [top_right, middle_right, bottom_right]
+  
+  #diagonals
+  backslash = [bottom_left, middle_middle, top_right]
+  forward_slash = [bottom_right, middle_middle, top_left]
 
-   #vertical columns
-   left_column = [top_left, middle_left, bottom_left]
-   middle_column = [top_middle, middle_middle, bottom_middle]
-   right_column = [top_right, middle_right, bottom_right]
-   
-   #diagonals
-   backslash = [bottom_left, middle_middle, top_right]
-   forward_slash = [bottom_right, middle_middle, top_left]
-
-   #gather all the tile_sets required for checking win conditions
-   tile_sets= [
-     top_row, middle_row, bottom_row,
-     left_column, middle_column, right_column,
-     backslash, forward_slash
-   ]
-   #see if any of them
-   game_over =
-     tile_sets.any? do |set|
-     #are filled with the same mark
-     set.all? {|mark| mark == recent_mark}
-   end
-   #if so, the game is over
-   return game_over
- end
+  #gather all the tile_sets required for checking win conditions
+  tile_sets= [
+    top_row, middle_row, bottom_row,
+    left_column, middle_column, right_column,
+    backslash, forward_slash
+  ]
+  #see if any of them
+  game_over =
+    tile_sets.any? do |set|
+    #are filled with the same mark
+    set.all? {|mark| mark == recent_mark}
+  end
+  #if so, the game is over
+  return game_over
+end
 
 
- ####end of  of function definitons####
+####end of  of function definitons####
 
- print_welcome_messages
- #cause input to update board display
- #create malliable board:
- board_hash =
-   {
-     top_left: "_",top_middle: "_", top_right: "_",
-     middle_left: "_", middle_middle: "_", middle_right: "_",
-     bottom_left: " ", bottom_middle: " ", bottom_right: " ",
-   }
+print_welcome_messages
+#cause input to update board display
+#create malliable board:
+board_hash =
+  {
+    top_left: "_",top_middle: "_", top_right: "_",
+    middle_left: "_", middle_middle: "_", middle_right: "_",
+    bottom_left: " ", bottom_middle: " ", bottom_right: " ",
+  }
 
- #draw the board based on the initial hash info
- print_board(board_hash)
+#draw the board based on the initial hash info
+print_board(board_hash)
 
- def play_a_game(board_hash)
-   game_not_over = true
-   mark = 'X'  #initial mark
-   while game_not_over
-     puts "#{mark}'s turn"
-     input = gets.chomp.to_sym
-     #check if input is correct
-     while valid_input?(input, board_hash) == false
-       #if input is bad, ask again
-       input = gets.chomp.to_sym
-     end
-     #display the move
-     #use the input to change the correct board_hash entry
-     board_hash["#{input}".to_sym] = mark
-     print_board(board_hash)
-     #check if the move was game-winning
-     if is_game_over?(board_hash, mark)
-       puts "game over"
-       break
-     end
-     #if not, give turn to next player
-     mark = set_mark(mark)
-   end
- end
+def play_a_game(board_hash)
+  game_not_over = true
+  mark = 'X'  #initial mark
+  while game_not_over
+    puts "#{mark}'s turn"
+    input = gets.chomp.to_sym
+    #check if input is correct
+    while valid_input?(input, board_hash) == false
+      #if input is bad, ask again
+      input = gets.chomp.to_sym
+    end
+    #display the move
+    #use the input to change the correct board_hash entry
+    board_hash["#{input}".to_sym] = mark
+    print_board(board_hash)
+    #check if the move was game-winning
+    if is_game_over?(board_hash, mark)
+      puts "game over"
+      break
+    end
+    #if not, give turn to next player
+    mark = set_mark(mark)
+  end
+end
 
- def play_an_automatic_game(moves)
-   #reset board
-   board_hash =
-     {
-       top_left: "_",top_middle: "_", top_right: "_",
-       middle_left: "_", middle_middle: "_", middle_right: "_",
-       bottom_left: " ", bottom_middle: " ", bottom_right: " ",
-     }
-   #automate inputs
-   mark = 'X'  #initial mark
-   for move in moves do
-     sleep 0.05
-     puts "#{mark}'s turn"
-     input = move.to_sym
-     #check if input is correct
-     unless valid_input?(input, board_hash)
-       next
-     end
-     #display the move
-     #use the input to change the correct board_hash entry
-     board_hash["#{input}".to_sym] = mark
-     print_board(board_hash)
-     #set up for next move 
-     if is_game_over?(board_hash, mark)
-       puts "game over"
-       break
-     end
-     mark = set_mark(mark)
-   end
- end
+def play_an_automatic_game(moves)
+  #reset board
+  board_hash =
+    {
+      top_left: "_",top_middle: "_", top_right: "_",
+      middle_left: "_", middle_middle: "_", middle_right: "_",
+      bottom_left: " ", bottom_middle: " ", bottom_right: " ",
+    }
+  #automate inputs
+  mark = 'X'  #initial mark
+  for move in moves do
+    sleep 0.05
+    puts "#{mark}'s turn"
+    input = move.to_sym
+    #check if input is correct
+    unless valid_input?(input, board_hash)
+      next
+    end
+    #display the move
+    #use the input to change the correct board_hash entry
+    board_hash["#{input}".to_sym] = mark
+    print_board(board_hash)
+    #set up for next move 
+    if is_game_over?(board_hash, mark)
+      puts "game over"
+      break
+    end
+    mark = set_mark(mark)
+  end
+end
 
- def test_program
-   top_row_win_x = [
-     "top_right", "bottom_right",
-     "top_middle", "bottom_middle",
-     "top_left", "bottom_left"
-   ]
-   middle_row_win_o = [
-     'bottom_left', 'middle_left',
-     'top_left', 'middle_middle',
-     'bottom_right', 'middle_right'
-   ]
-   bad_game = [
-     'bottom_left', 'bottom_left', #trying to overwrite move
-     'bottom_right', 'bottom_right'
-   ]
-   bottom_row_win_x = [
-     'bottom_left', 'middle_left',
-     'bottom_middle', 'middle_middle',
-     'bottom_right', 'middle_right'
-   ]
-   left_column_win_o = [
-     'bottom_right', 'top_left',
-     'top_right', 'bottom_left',
-     'middle_middle', 'middle_left'
-   ]
-   middle_column_win_x = [
-     'middle_middle', 'top_right', 
-     'bottom_middle', 'bottom_left',
-     'top_middle', 'top_left'
-   ]
-   right_column_win_o = [
-     'top_left', 'top_right',
-     'middle_middle', 'middle_right',
-     'middle_left', 'bottom_right',
-   ]
-   forward_slash_win_x = [
-     'bottom_left', 'middle_right',
-     'middle_middle', 'middle_left',
-     'top_right', 'top_left'
-   ]
-   backslash_win_o = [
-     'middle_left' , 'bottom_right',
-     'middle_right', 'middle_middle',
-     'top_middle', 'top_left',
-   ]
-   games = [
-     bad_game,
-     top_row_win_x, middle_row_win_o, bottom_row_win_x,
-     left_column_win_o, middle_column_win_x, right_column_win_o,
-     forward_slash_win_x, backslash_win_o
-   ]
-   for game in games
-     play_an_automatic_game(game)
-   end
- end
+def test_program
+  top_row_win_x = [
+    "top_right", "bottom_right",
+    "top_middle", "bottom_middle",
+    "top_left", "bottom_left"
+  ]
+  middle_row_win_o = [
+    'bottom_left', 'middle_left',
+    'top_left', 'middle_middle',
+    'bottom_right', 'middle_right'
+  ]
+  bad_game = [
+    'bottom_left', 'bottom_left', #trying to overwrite move
+    'bottom_right', 'bottom_right'
+  ]
+  bottom_row_win_x = [
+    'bottom_left', 'middle_left',
+    'bottom_middle', 'middle_middle',
+    'bottom_right', 'middle_right'
+  ]
+  left_column_win_o = [
+    'bottom_right', 'top_left',
+    'top_right', 'bottom_left',
+    'middle_middle', 'middle_left'
+  ]
+  middle_column_win_x = [
+    'middle_middle', 'top_right', 
+    'bottom_middle', 'bottom_left',
+    'top_middle', 'top_left'
+  ]
+  right_column_win_o = [
+    'top_left', 'top_right',
+    'middle_middle', 'middle_right',
+    'middle_left', 'bottom_right',
+  ]
+  forward_slash_win_x = [
+    'bottom_left', 'middle_right',
+    'middle_middle', 'middle_left',
+    'top_right', 'top_left'
+  ]
+  backslash_win_o = [
+    'middle_left' , 'bottom_right',
+    'middle_right', 'middle_middle',
+    'top_middle', 'top_left',
+  ]
+  games = [
+    bad_game,
+    top_row_win_x, middle_row_win_o, bottom_row_win_x,
+    left_column_win_o, middle_column_win_x, right_column_win_o,
+    forward_slash_win_x, backslash_win_o
+  ]
+  for game in games
+    play_an_automatic_game(game)
+  end
+end
 
- #test_program
- play_a_game(board_hash)
+test_program
+#play_a_game(board_hash)
 
 

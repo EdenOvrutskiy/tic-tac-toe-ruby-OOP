@@ -4,7 +4,7 @@ require 'pry'
 def print_welcome_messages
   puts "welcome to tic tac toe"
   puts "select a tile with the following syntax:"
-  puts "{row-position}"
+  puts "{row_column}"
   puts "{top/middle/bottom}-{left/middle/right}"
   puts "for example: 'top_middle'"
 end
@@ -24,7 +24,7 @@ def print_board(board_hash)
   second_row = '' << middle_left << '|' << middle_middle << '|' << middle_right
   third_row = '' << bottom_left << '|' << bottom_middle << '|' << bottom_right
 
-  #print board
+  #display board
   [first_row, second_row, third_row].each {|row| puts row}
 end
 
@@ -121,9 +121,9 @@ def play_a_game(board_hash)
       #if input is bad, ask again
       input = gets.chomp.to_sym
     end
-    #display the move
-    #use the input to change the correct board_hash entry
+    #use the input to change the correct board_hash entry to
     board_hash["#{input}".to_sym] = mark
+    #display the move
     print_board(board_hash)
     #check if the move was game-winning
     if is_game_over?(board_hash, mark)
@@ -167,6 +167,10 @@ def play_an_automatic_game(moves)
 end
 
 def test_program
+  bad_game = [
+    'bottom_left', 'bottom_left', #trying to overwrite move
+    'bottom_right', 'bottom_right'
+  ]
   top_row_win_x = [
     "top_right", "bottom_right",
     "top_middle", "bottom_middle",
@@ -176,10 +180,6 @@ def test_program
     'bottom_left', 'middle_left',
     'top_left', 'middle_middle',
     'bottom_right', 'middle_right'
-  ]
-  bad_game = [
-    'bottom_left', 'bottom_left', #trying to overwrite move
-    'bottom_right', 'bottom_right'
   ]
   bottom_row_win_x = [
     'bottom_left', 'middle_left',
@@ -224,5 +224,3 @@ end
 
 test_program
 #play_a_game(board_hash)
-
-

@@ -9,16 +9,52 @@ def print_welcome_messages
   puts "for example: 'top_middle'"
 end
 
+def get_top_left(board_hash)
+  return board_hash[:top_left]
+end
+
+def get_top_right(board_hash)
+  return board_hash[:top_right]
+end
+
+def get_top_middle(board_hash)
+  return board_hash[:top_middle]
+end
+
+def get_middle_left(board_hash)
+  return board_hash[:middle_left]
+end
+
+def get_middle_right(board_hash)
+  return board_hash[:middle_right]
+end
+
+def get_middle_middle(board_hash)
+  return board_hash[:middle_middle]
+end
+
+def get_bottom_left(board_hash)
+  return board_hash[:bottom_left]
+end
+
+def get_bottom_right(board_hash)
+  return board_hash[:bottom_right]
+end
+
+def get_bottom_middle(board_hash)
+  return board_hash[:bottom_middle]
+end
+
 def print_board(board_hash)
-  top_left = board_hash[:top_left]
-  top_middle = board_hash[:top_middle]
-  top_right = board_hash[:top_right]
-  middle_left =  board_hash[:middle_left] 
-  middle_middle =  board_hash[:middle_middle] 
-  middle_right = board_hash[:middle_right]
-  bottom_left = board_hash[:bottom_left]
-  bottom_middle = board_hash[:bottom_middle]
-  bottom_right = board_hash[:bottom_right]
+  top_left = get_top_left(board_hash)
+  top_middle = get_bottom_middle(board_hash)
+  top_right = get_top_right(board_hash)
+  middle_left =  get_middle_left(board_hash)
+  middle_middle =  get_middle_middle(board_hash)
+  middle_right =  get_middle_right(board_hash)
+  bottom_left =  get_bottom_left(board_hash)
+  bottom_middle =  get_bottom_middle(board_hash)
+  bottom_right =  get_bottom_right(board_hash)
 
   first_row = '' << top_left << '|' << top_middle << '|' << top_right
   second_row = '' << middle_left << '|' << middle_middle << '|' << middle_right
@@ -53,15 +89,16 @@ end
 
 def is_game_over?(board_hash, recent_mark)
   #list all cells
-  top_left = board_hash[:top_left]
-  top_middle = board_hash[:top_middle]
-  top_right = board_hash[:top_right]
-  middle_left = board_hash[:middle_left]
-  middle_middle = board_hash[:middle_middle]
-  middle_right = board_hash[:middle_right]
-  bottom_left = board_hash[:bottom_left]
-  bottom_middle = board_hash[:bottom_middle]
-  bottom_right = board_hash[:bottom_right]
+  top_left = get_top_left(board_hash)
+  top_middle = get_bottom_middle(board_hash)
+  top_right = get_top_right(board_hash)
+  middle_left =  get_middle_left(board_hash)
+  middle_middle =  get_middle_middle(board_hash)
+  middle_right =  get_middle_right(board_hash)
+  bottom_left =  get_bottom_left(board_hash)
+  bottom_middle =  get_bottom_middle(board_hash)
+  bottom_right =  get_bottom_right(board_hash)
+  top_left = get_top_left(board_hash)
   #test win conditions
 
   #horizontal rows
@@ -97,43 +134,43 @@ end
 
 ####end of  of function definitons####
 
-print_welcome_messages
-#cause input to update board display
-#create malliable board:
-board_hash =
-  {
-    top_left: "_",top_middle: "_", top_right: "_",
-    middle_left: "_", middle_middle: "_", middle_right: "_",
-    bottom_left: " ", bottom_middle: " ", bottom_right: " ",
-  }
+      print_welcome_messages
+      #cause input to update board display
+      #create malliable board:
+      board_hash =
+        {
+          top_left: "_",top_middle: "_", top_right: "_",
+          middle_left: "_", middle_middle: "_", middle_right: "_",
+          bottom_left: " ", bottom_middle: " ", bottom_right: " ",
+        }
 
-#draw the board based on the initial hash info
-print_board(board_hash)
+      #draw the board based on the initial hash info
+      print_board(board_hash)
 
-def play_a_game(board_hash)
-  game_not_over = true
-  mark = 'X'  #initial mark
-  while game_not_over
-    puts "#{mark}'s turn"
-    input = gets.chomp.to_sym
-    #check if input is correct
-    while valid_input?(input, board_hash) == false
-      #if input is bad, ask again
-      input = gets.chomp.to_sym
-    end
-    #use the input to change the correct board_hash entry to
-    board_hash["#{input}".to_sym] = mark
-    #display the move
-    print_board(board_hash)
-    #check if the move was game-winning
-    if is_game_over?(board_hash, mark)
-      puts "game over"
-      break
-    end
-    #if not, give turn to next player
-    mark = set_mark(mark)
-  end
-end
+      def play_a_game(board_hash)
+        game_not_over = true
+        mark = 'X'  #initial mark
+        while game_not_over
+          puts "#{mark}'s turn"
+          input = gets.chomp.to_sym
+          #check if input is correct
+          while valid_input?(input, board_hash) == false
+            #if input is bad, ask again
+            input = gets.chomp.to_sym
+          end
+          #use the input to change the correct board_hash entry to
+          board_hash["#{input}".to_sym] = mark
+          #display the move
+          print_board(board_hash)
+          #check if the move was game-winning
+          if is_game_over?(board_hash, mark)
+            puts "game over"
+            break
+          end
+          #if not, give turn to next player
+          mark = set_mark(mark)
+        end
+      end
 
 def play_an_automatic_game(moves)
   #reset board

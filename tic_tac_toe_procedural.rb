@@ -9,6 +9,7 @@ def print_welcome_messages
   puts "for example: 'top_middle'"
 end
 
+#get target tile from board
 def get_top_left(board_hash)
   return board_hash[:top_left]
 end
@@ -64,9 +65,30 @@ def print_board(board_hash)
   [first_row, second_row, third_row].each {|row| puts row}
 end
 
+def tile_value(input, board_hash)
+  #returns the value of the tile based on the input
+  #false if not found
+  #a bunch of if statements like so:
+  input = input.chomp.to_sym
+  case input
+  when :top_right then get_top_right(board_hash)
+  when :top_middle then get_top_middle(board_hash)
+  when :top_left then get_top_left(board_hash)
+  when :middle_right then get_middle_right(board_hash)
+  when :middle_middle then get_middle_middle(board_hash)
+  when :middle_left then get_middle_left(board_hash)
+  when :bottom_right then get_bottom_right(board_hash)
+  when :bottom_middle then get_bottom_middle(board_hash)
+  when :bottom_left then get_bottom_left(board_hash)
+  else
+    false
+  end
+end
+
 def valid_input?(input, board_hash)
-  target_tile_value = board_hash["#{input}".to_sym]
-  if board_hash.include?(input) == false
+  target_tile_value = tile_value(input, board_hash)
+  #target_tile_value = board_hash["#{input}".to_sym]
+  if target_tile_value == false
     puts "bad input! target-tile name mispelled"
     return false
   elsif (target_tile_value == 'X' || target_tile_value == 'O')
@@ -152,7 +174,7 @@ end
         mark = 'X'  #initial mark
         while game_not_over
           puts "#{mark}'s turn"
-          input = gets.chomp.to_sym
+          input = gets
           #check if input is correct
           while valid_input?(input, board_hash) == false
             #if input is bad, ask again
@@ -185,7 +207,7 @@ def play_an_automatic_game(moves)
   for move in moves do
     sleep 0.05
     puts "#{mark}'s turn"
-    input = move.to_sym
+    input = move
     #check if input is correct
     unless valid_input?(input, board_hash)
       next

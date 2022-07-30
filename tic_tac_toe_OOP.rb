@@ -9,44 +9,37 @@ def print_welcome_messages
   puts "for example: 'top_middle'"
 end
 
-#OOP
+##OOP:
 class Board
-  @@empty_board =
-    {
-      top_left: "_",top_middle: "_", top_right: "_",
-      middle_left: "_", middle_middle: "_", middle_right: "_",
-      bottom_left: " ", bottom_middle: " ", bottom_right: " ",
-    }
+  private
+  attr_reader :top_left
+  attr_reader :top_middle
+  attr_reader :top_right
+  attr_reader :middle_left
+  attr_reader :middle_middle
+  attr_reader :middle_right
+  attr_reader :bottom_left
+  attr_reader :bottom_middle
+  attr_reader :bottom_right
+
+  public
   def initialize
-    @board_data = @@empty_board
+    @top_left = nil
+    @top_middle = nil
+    @top_right = nil
+    @middle_left = nil
+    @middle_middle = nil
+    @middle_right = nil
+    @bottom_left = nil
+    @bottom_middle = nil
+    @bottom_right = nil
   end
   def display
-    top_left = @board_data[:top_left]
-    top_middle = @board_data[:top_middle]
-    top_right = @board_data[:top_right]
-    middle_left =  @board_data[:middle_left] 
-    middle_middle =  @board_data[:middle_middle] 
-    middle_right = @board_data[:middle_right]
-    bottom_left = @board_data[:bottom_left]
-    bottom_middle = @board_data[:bottom_middle]
-    bottom_right = @board_data[:bottom_right]
-
-    first_row = '' << top_left << '|' << top_middle << '|' << top_right
-    second_row = '' << middle_left << '|' << middle_middle << '|' <<
-                 middle_right
-    third_row = '' << bottom_left << '|' << bottom_middle << '|' << bottom_right
-
-    #display board
-    [first_row, second_row, third_row].each {|row| puts row}
-  end
-  def mark(location)
-    @board_data[location] = 'X'
+    p [top_left, top_middle, top_right]
+    p [middle_left, middle_middle, middle_right]
+    p [bottom_left, bottom_middle, bottom_right]
   end
 end
 
-print_welcome_messages
-board = Board.new()
-board.display
-location = :top_left
-board.mark(location)
-board.display
+first_board = Board.new()
+first_board.display

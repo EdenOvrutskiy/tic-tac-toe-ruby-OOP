@@ -10,19 +10,50 @@ def print_welcome_messages
 end
 
 ##OOP:
-class Board
-  private
-  attr_reader :top_left
-  attr_reader :top_middle
-  attr_reader :top_right
-  attr_reader :middle_left
-  attr_reader :middle_middle
-  attr_reader :middle_right
-  attr_reader :bottom_left
-  attr_reader :bottom_middle
-  attr_reader :bottom_right
+##I want an interface to the board data:
+#instead of my program writing board_hash{:top_left}
+#it should do board.top_left
 
-  public
+board_data =
+  [
+    ['X', nil, nil],
+    [nil, nil, nil],
+    [nil, nil, nil]
+  ]
+#note: I don't have to use a data structure, could have just
+#used 9 variables and name them accordingly, but this lets
+#me practice encapsulating data structures
+
+class Board
+  #enables API access to board_data
+  #before: board_data[0][1]
+  #after: board_data.top_middle
+  attr_accessor :top_left, :top_middle, :top_right,
+                :middle_left, :middle_middle, :middle_right,
+                :bottom_left, :bottom_middle, :bottom_right
+  
+  def initialize(board_data)
+    @top_left      = board_data[0][0]
+    @top_middle    = board_data[0][1]
+    @top_right     = board_data[0][2]
+    @middle_left   = board_data[1][0]
+    @middle_middle = board_data[1][1]
+    @middle_right  = board_data[1][2]
+    @bottom_left   = board_data[2][0]
+    @bottom_middle = board_data[2][1]
+    @bottom_right  = board_data[2][2]
+  end
+end
+
+
+###########
+##old attempts to create objects / classes, keeping it below
+##to later reference
+class Board_old
+  attr_reader :top_left, :top_middle, :top_right
+  attr_reader :middle_left, :middle_middle, :middle_right
+  attr_reader :bottom_left, :bottom_middle, :bottom_right
+
   def initialize
     @top_left = nil
     @top_middle = nil
@@ -34,12 +65,26 @@ class Board
     @bottom_middle = nil
     @bottom_right = nil
   end
+end
+
+class Board_displayer
+  attr_reader :board
+  
+  def initialize(board)
+    @board = board
+  end
+  
   def display
-    p [top_left, top_middle, top_right]
-    p [middle_left, middle_middle, middle_right]
-    p [bottom_left, bottom_middle, bottom_right]
+    puts board.top_left
   end
 end
 
-first_board = Board.new()
-first_board.display
+class User_input_reader
+  def initialize
+    @input = gets
+  end
+end
+######################
+
+
+p Board.new(board_data).top_left

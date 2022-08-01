@@ -225,37 +225,56 @@ def return_clear_board
     }
 end
 
-def play_a_kind_of_game(moves = false)
+
+
+def play_a_kind_of_game(moves = nil)
   #this function exists to reduce duplication in
   #play_a_game and play_an_automatic_game
 
   #expects a 1D array of strings representing inputs
-  board_hash = return_clear_board
+  
+  #clear board
+  board_hash = return_clear_board 
   game_not_over = true
   mark = 'X'  #initial mark
   while game_not_over
     puts "#{mark}'s turn"
-    input = moves ? moves.shift : gets
+    game_type = moves ? "automatic" : "manual"
+
+    #get input based on the game type
+    if game_type == "manual"
+      input = gets
+    elsif game_type == "automatic"
+      input = moves.shift
+    end
+
+    #reject bad input, and then request / get a new one
     while valid_input?(input, board_hash) == false
-      unless moves.empty?
-        input = moves ? moves.shift : gets
-      else
-        puts "no valid moves remain in this automated game"
-        break
+      if game_type == "automatic"
+        unless moves.empty?
+          input = moves.shift
+        else
+          puts "no valid moves remain in this automated game"
+          break
+        end
+      elsif game_type == "manual"
+        input = gets
       end
     end
-    if input.nil? then
-      #if the last input was bad, and there are no more moves
-      #in the automated game, break
-      break
+    no_moves_remain = input.nil?
+    if game_type == "automatic" && no_moves_remain then
+      break #end this game
     else
       #use the input to change the correct board_hash entry to
       board_hash[input.to_sym] = mark
       #display the move
       print_board(board_hash)
       #if the move wasn't game winning, pass the turn
-      is_game_over?(board_hash, mark) ? break : mark = set_mark(
-        mark)
+      if is_game_over?(board_hash, mark)
+        break
+      else
+        mark = set_mark(mark)
+      end
     end
   end
   puts "game over"

@@ -1,6 +1,18 @@
 require 'pry'
 
-###function definitions###
+#TODO:
+# bugs:
+# the board printing is broken.
+# manual game does not display inputs
+
+# a ton of small functions just to get individual values
+#   from board_hash is annoying
+
+# board_hash? why not individual variables?
+
+
+###Function definitions###
+#########################
 def print_welcome_messages
   puts "welcome to tic tac toe"
   puts "select a tile with the following syntax:"
@@ -9,7 +21,7 @@ def print_welcome_messages
   puts "for example: 'top_middle'"
 end
 
-#get target tile from board
+#encapsulate 
 def get_top_left(board_hash)
   return board_hash[:top_left]
 end
@@ -46,30 +58,57 @@ def get_bottom_middle(board_hash)
   return board_hash[:bottom_middle]
 end
 
-def print_board(board_hash)
-  top_left = get_top_left(board_hash)
-  top_middle = get_bottom_middle(board_hash)
-  top_right = get_top_right(board_hash)
-  middle_left =  get_middle_left(board_hash)
-  middle_middle =  get_middle_middle(board_hash)
-  middle_right =  get_middle_right(board_hash)
-  bottom_left =  get_bottom_left(board_hash)
-  bottom_middle =  get_bottom_middle(board_hash)
-  bottom_right =  get_bottom_right(board_hash)
-
-  first_row = '' << top_left << '|' << top_middle << '|' << top_right
-  second_row = '' << middle_left << '|' << middle_middle << '|' << middle_right
-  third_row = '' << bottom_left << '|' << bottom_middle << '|' << bottom_right
-
-  #display board
-  [first_row, second_row, third_row].each {|row| puts row}
+#change target tile of board
+def set_bottom_middle(input, board_hash)
+  board_hash[:bottom_middle] = input
 end
 
-def tile_value(input, board_hash)
+#display board
+def print_board(board_data)
+  top_left = get_top_left(board_data)
+  top_middle = get_top_middle(board_data)
+  top_right = get_top_right(board_data)
+  middle_left =  get_middle_left(board_data)
+  middle_middle =  get_middle_middle(board_data)
+  middle_right =  get_middle_right(board_data)
+  bottom_left =  get_bottom_left(board_data)
+  bottom_middle =  get_bottom_middle(board_data)
+  bottom_right =  get_bottom_right(board_data)
+  board = [
+    [top_left,       top_middle,       top_right       ],
+    [middle_left, middle_middle,  middle_right ],
+    [bottom_left, bottom_middle, bottom_right]
+  ]
+  separator = '|'
+  for row in board 
+    row.each_with_index do |cell, index|
+      last_row_index = row.length - 1
+      if cell == nil
+        if index == last_row_index
+          print(' ')
+        else
+          print('_')
+        end
+      else
+        print(cell)
+      end
+      puts("\n")
+    end
+  end
+end
+
+def tile_value(input, board_hash) # breaks when nil
   #returns the value of the tile based on the input
-  #false if not found
-  #a bunch of if statements like so:
-  input = input.chomp.to_sym
+  #as a symbol
+  #false / nil if not found
+  if (input.is_a? String)
+    input = input.chomp.to_sym
+  elsif input != nil
+    input = input.to_sym
+  else
+    return false
+  end
+  
   case input
   when :top_right then get_top_right(board_hash)
   when :top_middle then get_top_middle(board_hash)
@@ -86,6 +125,7 @@ def tile_value(input, board_hash)
 end
 
 def valid_input?(input, board_hash)
+  #tests player-input 
   target_tile_value = tile_value(input, board_hash)
   #target_tile_value = board_hash["#{input}".to_sym]
   if target_tile_value == false
@@ -138,7 +178,7 @@ def is_game_over?(board_hash, recent_mark)
   forward_slash = [bottom_right, middle_middle, top_left]
 
   #gather all the tile_sets required for checking win conditions
-  tile_sets= [
+  tile_sets = [
     top_row, middle_row, bottom_row,
     left_column, middle_column, right_column,
     backslash, forward_slash
@@ -153,55 +193,62 @@ def is_game_over?(board_hash, recent_mark)
   return game_over
 end
 
+def play_a_game(board_hash)
+  game_not_over = true
+  mark = 'X'  #initial mark
+  while game_not_over
+    puts "#{mark}'s turn"
+    input = gets
+    #check if input is correct
+    while valid_input?(input, board_hash) == false
+      #if input is bad, ask again
+      input = gets
+    end
+    #use the input to change the correct board_hash entry to
+    board_hash["#{input}".chomp.to_sym] = mark
+    #display the move
+    print_board(board_hash)
+    #check if the move was game-winning
+    if is_game_over?(board_hash, mark)
+      puts "game over"
+      break
+    end
+    #if not, give turn to next player
+    mark = set_mark(mark)
+  end
+end
 
-####end of  of function definitons####
-
-      print_welcome_messages
-      #cause input to update board display
-      #create malliable board:
-      board_hash =
-        {
-          top_left: "_",top_middle: "_", top_right: "_",
-          middle_left: "_", middle_middle: "_", middle_right: "_",
-          bottom_left: " ", bottom_middle: " ", bottom_right: " ",
-        }
-
-      #draw the board based on the initial hash info
-      print_board(board_hash)
-
-      def play_a_game(board_hash)
-        game_not_over = true
-        mark = 'X'  #initial mark
-        while game_not_over
-          puts "#{mark}'s turn"
-          input = gets
-          #check if input is correct
-          while valid_input?(input, board_hash) == false
-            #if input is bad, ask again
-            input = gets.chomp.to_sym
-          end
-          #use the input to change the correct board_hash entry to
-          board_hash["#{input}".to_sym] = mark
-          #display the move
-          print_board(board_hash)
-          #check if the move was game-winning
-          if is_game_over?(board_hash, mark)
-            puts "game over"
-            break
-          end
-          #if not, give turn to next player
-          mark = set_mark(mark)
-        end
-      end
-
-def play_an_automatic_game(moves)
-  #reset board
+def return_clear_board
   board_hash =
     {
       top_left: "_",top_middle: "_", top_right: "_",
       middle_left: "_", middle_middle: "_", middle_right: "_",
       bottom_left: " ", bottom_middle: " ", bottom_right: " ",
     }
+end
+
+def play_a_kind_of_game(moves = false)
+  board_hash = return_clear_board
+  game_not_over = true
+  mark = 'X'  #initial mark
+  while game_not_over
+    puts "#{mark}'s turn"
+    moves ? input = moves[0].delete_at(0) : input = gets
+    while valid_input?(input, board_hash) == false
+      moves ? input = moves[0].delete_at(0) : input = gets
+    end
+    #use the input to change the correct board_hash entry to
+    board_hash["#{input}".to_sym] = mark
+    #display the move
+    print_board(board_hash)
+    #if the move wasn't game winning, pass the turn
+    is_game_over?(board_hash, mark) ? break : mark = set_mark(mark)
+  end
+  puts "game over"
+end
+
+def play_an_automatic_game(moves)
+  board_hash = return_clear_board
   #automate inputs
   mark = 'X'  #initial mark
   for move in moves do
@@ -277,9 +324,36 @@ def test_program
     forward_slash_win_x, backslash_win_o
   ]
   for game in games
-    play_an_automatic_game(game)
+    play_a_kind_of_game(games)
+    #play_an_automatic_game(game)
   end
 end
+######################################
+####end of  of function definitons####
 
-test_program
+#executable code:
+print_welcome_messages
+#cause input to update board display
+#create malliable board:
+board_2d_array = [
+  [nil, nil, nil],
+  [nil, nil, nil],
+  [nil, nil, nil]
+]
+
+board_hash =
+  {
+    top_left: nil ,top_middle: nil, top_right: nil,
+    middle_left: nil, middle_middle: nil, middle_right: nil,
+    bottom_left: nil, bottom_middle: nil, bottom_right: nil,
+  }
+
+
+#draw the board based on the initial hash info
+print_board(board_hash)
+
+
+
+#test_program
 #play_a_game(board_hash)
+play_a_kind_of_game

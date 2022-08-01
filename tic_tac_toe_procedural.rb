@@ -1,16 +1,5 @@
 require 'pry'
 
-#TODO:
-# bugs:
-# the board printing is broken.
-# manual game does not display inputs
-
-# a ton of small functions just to get individual values
-#   from board_hash is annoying
-
-# board_hash? why not individual variables?
-
-
 ###Function definitions###
 #########################
 def print_welcome_messages
@@ -21,7 +10,7 @@ def print_welcome_messages
   puts "for example: 'top_middle'"
 end
 
-#encapsulate 
+#encapsulate (hide) data ('s structure) by turning it into behavior
 def get_top_left(board_hash)
   return board_hash[:top_left]
 end
@@ -65,6 +54,8 @@ end
 
 #display board
 def print_board(board_data)
+  #expects strings or nils as data in board's cells
+  
   #get all cell values from board data
   top_left = get_top_left(board_data)
   top_middle = get_top_middle(board_data)
@@ -347,17 +338,15 @@ board_2d_array = [
 
 board_hash =
   {
-    top_left: 'X' ,top_middle: nil, top_right: nil,
+    top_left: nil ,top_middle: nil, top_right: nil,
     middle_left: nil, middle_middle: nil, middle_right: nil,
     bottom_left: nil, bottom_middle: nil, bottom_right: nil,
   }
 
 
 #draw the board based on the initial hash info
-print_board(board_hash)
-
-
+#print_board(board_hash)
 
 #test_program
-#play_a_game(board_hash)
+play_a_game(board_hash)
 #play_a_kind_of_game

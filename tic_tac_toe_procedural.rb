@@ -138,7 +138,7 @@ def valid_input?(input, board_hash)
 end
 #determine whose turn it is
 #based on the previous turn
-def set_mark(mark)
+def flip_mark(mark)
   case mark
   when 'X' then 'O'
   when 'O' then 'X'
@@ -191,30 +191,6 @@ def is_game_over?(board_hash, recent_mark)
   return game_over
 end
 
-def play_a_game(board_hash)
-  game_not_over = true
-  mark = 'X'  #initial mark
-  while game_not_over
-    puts "#{mark}'s turn"
-    input = gets
-    #check if input is correct
-    while valid_input?(input, board_hash) == false
-      #if input is bad, ask again
-      input = gets
-    end
-    #use the input to change the correct board_hash entry to
-    board_hash["#{input}".chomp.to_sym] = mark
-    #display the move
-    print_board(board_hash)
-    #check if the move was game-winning
-    if is_game_over?(board_hash, mark)
-      puts "game over"
-      break
-    end
-    #if not, give turn to next player
-    mark = set_mark(mark)
-  end
-end
 
 def return_clear_board
   board_hash =
@@ -225,18 +201,22 @@ def return_clear_board
     }
 end
 
-
-
-def play_a_kind_of_game(moves = nil)
+def play_game(moves = nil)
   #this function exists to reduce duplication in
   #play_a_game and play_an_automatic_game
 
-  #expects a 1D array of strings representing inputs
+  #(optional) takes  a 1D array of strings representing inputs
+  #  as an argument
   
-  #clear board
-  board_hash = return_clear_board 
-  game_not_over = true
+  #clear the board
+  board_hash = return_clear_board
+
+  #draw initial board
+  print_board(board_hash)
+
   mark = 'X'  #initial mark
+
+  game_not_over = true
   while game_not_over
     puts "#{mark}'s turn"
     game_type = moves ? "automatic" : "manual"
@@ -249,6 +229,7 @@ def play_a_kind_of_game(moves = nil)
     end
 
     #reject bad input, and then request / get a new one
+    #based on the game type
     while valid_input?(input, board_hash) == false
       if game_type == "automatic"
         unless moves.empty?
@@ -262,48 +243,24 @@ def play_a_kind_of_game(moves = nil)
       end
     end
     no_moves_remain = input.nil?
-    if game_type == "automatic" && no_moves_remain then
+    if game_type == "automatic" && no_moves_remain 
       break #end this game
     else
       #use the input to change the correct board_hash entry to
-      board_hash[input.to_sym] = mark
+      board_hash[input.chomp.to_sym] = mark
       #display the move
       print_board(board_hash)
       #if the move wasn't game winning, pass the turn
       if is_game_over?(board_hash, mark)
         break
       else
-        mark = set_mark(mark)
+        mark = flip_mark(mark)
       end
     end
   end
   puts "game over"
 end
 
-def play_an_automatic_game(moves)
-  board_hash = return_clear_board
-  #automate inputs
-  mark = 'X'  #initial mark
-  for move in moves do
-    sleep 0.05
-    puts "#{mark}'s turn"
-    input = move
-    #check if input is correct
-    unless valid_input?(input, board_hash)
-      next
-    end
-    #display the move
-    #use the input to change the correct board_hash entry
-    board_hash["#{input}".to_sym] = mark
-    print_board(board_hash)
-    #set up for next move 
-    if is_game_over?(board_hash, mark)
-      puts "game over"
-      break
-    end
-    mark = set_mark(mark)
-  end
-end
 
 def test_program
   bad_game = [
@@ -356,10 +313,14 @@ def test_program
     left_column_win_o, middle_column_win_x, right_column_win_o,
     forward_slash_win_x, backslash_win_o
   ]
+  #automate some games
   for game in games
-    play_a_kind_of_game(game)
-    #play_an_automatic_game(game)
+    play_game(game)
   end
+
+  #play a manual game
+  play_game
+  
 end
 ######################################
 ####end of  of function definitons####
@@ -381,21 +342,13 @@ board_hash =
     bottom_left: nil, bottom_middle: nil, bottom_right: nil,
   }
 
+#test_program
 backslash_win_o = [
   'middle_left' , 'bottom_right',
   'middle_right', 'middle_middle',
   'top_middle', 'top_left',
 ]
 
-#draw the board based on the initial hash info
-#print_board(board_hash)
-
-#play_a_game(board_hash)
-#play_an_automatic_game(backslash_win_o) # works
 test_program
 
-bad_game = [
-  'bottom_left', 'bottom_left', #trying to overwrite move
-  'bottom_right', 'bottom_right'
-]
-#play_a_kind_of_game(bad_game)
+

@@ -65,6 +65,7 @@ end
 
 #display board
 def print_board(board_data)
+  #get all cell values from board data
   top_left = get_top_left(board_data)
   top_middle = get_top_middle(board_data)
   top_right = get_top_right(board_data)
@@ -74,27 +75,30 @@ def print_board(board_data)
   bottom_left =  get_bottom_left(board_data)
   bottom_middle =  get_bottom_middle(board_data)
   bottom_right =  get_bottom_right(board_data)
-  board = [
-    [top_left,       top_middle,       top_right       ],
-    [middle_left, middle_middle,  middle_right ],
-    [bottom_left, bottom_middle, bottom_right]
-  ]
-  separator = '|'
-  for row in board 
-    row.each_with_index do |cell, index|
-      last_row_index = row.length - 1
-      if cell == nil
-        if index == last_row_index
-          print(' ')
-        else
-          print('_')
-        end
-      else
-        print(cell)
-      end
-      puts("\n")
-    end
-  end
+
+  #process them:
+  #replace `nil` values in the top 2 rows with '_'
+  top_left = top_left.nil? ? '_' : top_left
+  top_middle = top_middle.nil? ? '_' : top_middle
+  top_right = top_right.nil? ? '_' : top_right
+  middle_left =  middle_left.nil? ? '_' : middle_left
+  middle_middle =  middle_middle.nil? ? '_' : middle_middle
+  middle_right =  middle_right.nil? ? '_' : middle_right
+
+  #replace `nil` values in the last row with ' '
+  bottom_left =  bottom_left.nil? ? ' ' : bottom_left
+  bottom_middle =  bottom_middle.nil? ? ' ' : bottom_middle
+  bottom_right =  bottom_right.nil? ? ' ' : bottom_right
+
+  first_row = '' << top_left << '|' << top_middle << '|' <<
+              top_right
+  second_row = '' << middle_left << '|' << middle_middle << '|' <<
+               middle_right
+  third_row = '' << bottom_left << '|' << bottom_middle << '|' <<
+              bottom_right
+
+  #print out each row
+  [first_row, second_row, third_row].each {|row| puts row}
 end
 
 def tile_value(input, board_hash) # breaks when nil
@@ -343,7 +347,7 @@ board_2d_array = [
 
 board_hash =
   {
-    top_left: nil ,top_middle: nil, top_right: nil,
+    top_left: 'X' ,top_middle: nil, top_right: nil,
     middle_left: nil, middle_middle: nil, middle_right: nil,
     bottom_left: nil, bottom_middle: nil, bottom_right: nil,
   }
@@ -356,4 +360,4 @@ print_board(board_hash)
 
 #test_program
 #play_a_game(board_hash)
-play_a_kind_of_game
+#play_a_kind_of_game

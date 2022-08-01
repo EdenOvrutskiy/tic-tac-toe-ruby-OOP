@@ -93,17 +93,19 @@ def print_board(board_data)
 end
 
 def tile_value(input, board_hash) # breaks when nil
-  #returns the value of the tile based on the input
-  #as a symbol
-  #false / nil if not found
-  if (input.is_a? String)
+  #returns value of cell that's indicated by input's target
+  # or false / nil if not found
+    
+  #convert input to symbol
+  if input.is_a? String
     input = input.chomp.to_sym
-  elsif input != nil
+  elsif input.nil? == false
     input = input.to_sym
   else
     return false
   end
-  
+
+  #attempt to use a symbol to access a value in the hash
   case input
   when :top_right then get_top_right(board_hash)
   when :top_middle then get_top_middle(board_hash)
@@ -114,6 +116,7 @@ def tile_value(input, board_hash) # breaks when nil
   when :bottom_right then get_bottom_right(board_hash)
   when :bottom_middle then get_bottom_middle(board_hash)
   when :bottom_left then get_bottom_left(board_hash)
+  #if symbol isn't valid, returns false
   else
     false
   end
@@ -223,21 +226,37 @@ def return_clear_board
 end
 
 def play_a_kind_of_game(moves = false)
+  #this function exists to reduce duplication in
+  #play_a_game and play_an_automatic_game
+
+  #expects a 1D array of strings representing inputs
   board_hash = return_clear_board
   game_not_over = true
   mark = 'X'  #initial mark
   while game_not_over
     puts "#{mark}'s turn"
-    moves ? input = moves[0].delete_at(0) : input = gets
+    input = moves ? moves.shift : gets
     while valid_input?(input, board_hash) == false
-      moves ? input = moves[0].delete_at(0) : input = gets
+      unless moves.empty?
+        input = moves ? moves.shift : gets
+      else
+        puts "no valid moves remain in this automated game"
+        break
+      end
     end
-    #use the input to change the correct board_hash entry to
-    board_hash["#{input}".to_sym] = mark
-    #display the move
-    print_board(board_hash)
-    #if the move wasn't game winning, pass the turn
-    is_game_over?(board_hash, mark) ? break : mark = set_mark(mark)
+    if input.nil? then
+      #if the last input was bad, and there are no more moves
+      #in the automated game, break
+      break
+    else
+      #use the input to change the correct board_hash entry to
+      board_hash[input.to_sym] = mark
+      #display the move
+      print_board(board_hash)
+      #if the move wasn't game winning, pass the turn
+      is_game_over?(board_hash, mark) ? break : mark = set_mark(
+        mark)
+    end
   end
   puts "game over"
 end
@@ -319,7 +338,7 @@ def test_program
     forward_slash_win_x, backslash_win_o
   ]
   for game in games
-    play_a_kind_of_game(games)
+    play_a_kind_of_game(game)
     #play_an_automatic_game(game)
   end
 end
@@ -343,10 +362,21 @@ board_hash =
     bottom_left: nil, bottom_middle: nil, bottom_right: nil,
   }
 
+backslash_win_o = [
+  'middle_left' , 'bottom_right',
+  'middle_right', 'middle_middle',
+  'top_middle', 'top_left',
+]
 
 #draw the board based on the initial hash info
 #print_board(board_hash)
 
-#test_program
-play_a_game(board_hash)
-#play_a_kind_of_game
+#play_a_game(board_hash)
+#play_an_automatic_game(backslash_win_o) # works
+test_program
+
+bad_game = [
+  'bottom_left', 'bottom_left', #trying to overwrite move
+  'bottom_right', 'bottom_right'
+]
+#play_a_kind_of_game(bad_game)

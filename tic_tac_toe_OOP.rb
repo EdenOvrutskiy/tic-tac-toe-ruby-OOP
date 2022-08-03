@@ -12,10 +12,12 @@ end
 ##OOP:
 
 class Board
-  # private
+  private
+  attr_accessor :previous_mark
   # attr_writer :top_left, :top_middle, :top_right,
   #             :middle_left, :middle_middle, :middle_right,
   #             :bottom_left, :bottom_middle, :bottom_right
+  
   public
   attr_reader :top_left, :top_middle, :top_right,
               :middle_left, :middle_middle, :middle_right,
@@ -58,6 +60,8 @@ class Board
     @bottom_right = Cell.new()
     @bottom_right.set_row_bottom
     @bottom_right.set_column_right
+
+    @previous_mark = nil #at the beginning, there's no previous mark
   end
 
   def display
@@ -86,7 +90,58 @@ class Board
     puts middle_row
     puts bottom_row
   end
+
+  def mark(target)
+    #translate target's string input to an object
+    p top_right
+    target = case target
+             when "top_right" then top_right
+             when "top_middle" then top_middle
+             when "top_left" then top_left
+             when "middle_right" then middle_right
+             when "middle_middle" then middle_middle
+             when "middle_left" then middle_left
+             when "bottom_right" then bottom_right
+             when "bottom_middle" then bottom_middle
+             when "bottom_left" then bottom_left
+             else
+               puts "tried to mark a bad target at #{self}"
+             end
+    
+    #mark the cell depending on the previous mark
+    if previous_mark == nil || previous_mark == 'O'
+      target.mark_x #why is target a string??
+      self.previous_mark = 'X'
+    elsif previous_mark == 'X'
+      target.mark_o
+      self.previous_mark = 'O'
+    else
+      puts "bad last mark at #{self}"
+    end
+  end
+
+  def is_game_over
+    cells = [
+      top_right,
+      top_middle,
+      top_left,
+      middle_right,
+      middle_middle,
+      middle_left,
+      bottom_right,
+      bottom_middle,
+      bottom_left
+    ]
+    #check all the top row cells
+    top_row = cells.select {|cell| cell.row == 'top'}
+    #check:
+    #is none of them nil?
+    top_row.none? {|cell| cell.content.nil?} &&
+      #are they all the same?
+      top_row.uniq.count == 1 ? true : false
+  end
 end
+
 
 class Cell
   private
@@ -127,9 +182,6 @@ class Cell
     self.column = 'right'
   end
 
-  def overwrite_error
-    puts "error: attempted to overwrite cell #{self}"
-  end
 
   def mark_x
     if self.content == nil then self.content = 'X'
@@ -145,6 +197,10 @@ class Cell
     end
   end
 
+  def overwrite_error
+    puts "error: attempted to overwrite cell #{self}"
+  end
+  
   def printable
     if self.content.nil?
       self.row == 'bottom' ? ' ' : '_'
@@ -154,30 +210,57 @@ class Cell
   end
 end
 
-# celly = Cell.new()
-# celly.mark_X
-# p celly.set_row_top
-# p celly.row
-# p celly.column
-# p celly.set_column_right
-# p celly.column
 
-# puts ###
-# p celly
+class Input
+  #initialized with input (gets or other data)
+  #can tell you if it's valid or not
+  #can tell you which cell the input is targetting
+  private
+  attr_reader :input
+  attr_writer :target
+  
+  public
+  attr_reader :target
+  def initialize(data)
+    
+    def process_input(input)
+      processed_input = input
+                          .to_s
+                          .chomp
+                          .downcase
+    end
+    
+    @input = process_input(data)
+    @target = nil
+  end
 
-#Board.new().
-#celly = Cell.new()
-#celly.mark_x
-#celly.set_row_middle
+  def valid?
+    valid_inputs =
+      [
+        "top_left", "top_middle", "top_right",
+        "middle_left", "middle_middle", "middle_right",
+        "bottom_left", "bottom_middle", "bottom_right"
+      ]
+    valid_inputs.include?(input) ? true : false
+  end
 
-#boardy = Board.new()
-#boardy.display
+  def target
+    self.valid? ? input : nil
+  end
+end
 
-# boardy = Board.new()
-# boardy.top_left.mark_o
-# boardy.display
+moves = ['top_left', 'bottom_left',
+         'top_middle', 'bottom_middle',
+         'top_right', 'bottom_right',
+        ]
 
-celly = Cell.new()
-p celly.mark_x
-p celly.mark_o
-p celly
+board = Board.new()
+board.display
+p board.is_game_over
+for move in moves
+  input = Input.new(move)
+  board.mark(input.target)
+  board.display
+  p board.is_game_over
+end
+

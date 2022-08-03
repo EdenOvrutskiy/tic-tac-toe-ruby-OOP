@@ -127,16 +127,22 @@ class Cell
     self.column = 'right'
   end
 
+  def overwrite_error
+    puts "error: attempted to overwrite cell #{self}"
+  end
+
   def mark_x
-    self.content = 'X'
+    if self.content == nil then self.content = 'X'
+    else
+      overwrite_error
+    end
   end
 
   def mark_o
-    self.content = 'O'
-  end
-
-  def erase
-    self.content = nil 
+    if self.content == nil then self.content = 'O'
+    else
+      overwrite_error
+    end
   end
 
   def printable
@@ -167,6 +173,11 @@ end
 #boardy = Board.new()
 #boardy.display
 
-boardy = Board.new()
-boardy.top_left.mark_o
-boardy.display
+# boardy = Board.new()
+# boardy.top_left.mark_o
+# boardy.display
+
+celly = Cell.new()
+p celly.mark_x
+p celly.mark_o
+p celly

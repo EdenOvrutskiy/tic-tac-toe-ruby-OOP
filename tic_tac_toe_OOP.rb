@@ -24,7 +24,7 @@ class Board
               :bottom_left, :bottom_middle, :bottom_right
 
   def initialize
-    #a board is made up of 9 cells
+    #a board is up of 9 cells
     @top_left = Cell.new()
     @top_left.set_row_top
     @top_left.set_column_left
@@ -93,7 +93,6 @@ class Board
 
   def mark(target)
     #translate target's string input to an object
-    p top_right
     target = case target
              when "top_right" then top_right
              when "top_middle" then top_middle
@@ -108,37 +107,74 @@ class Board
                puts "tried to mark a bad target at #{self}"
              end
     
-    #mark the cell depending on the previous mark
+    #mark the target cell depending on the previous mark
     if previous_mark == nil || previous_mark == 'O'
-      target.mark_x #why is target a string??
-      self.previous_mark = 'X'
+      target.mark_x
     elsif previous_mark == 'X'
       target.mark_o
-      self.previous_mark = 'O'
     else
       puts "bad last mark at #{self}"
     end
+    
+    swap_previous_mark
   end
+  def swap_previous_mark
+    case self.previous_mark
+    when nil then self.previous_mark = 'X'
+    when 'O' then self.previous_mark = 'X'
+    when 'X' then self.previous_mark = 'O'
+    else
+      p "error swapping previous mark at #{self}"
+    end
+  end
+
 
   def is_game_over
     cells = [
-      top_right,
-      top_middle,
-      top_left,
-      middle_right,
-      middle_middle,
-      middle_left,
-      bottom_right,
-      bottom_middle,
-      bottom_left
+      top_right, top_middle, top_left,
+      middle_right, middle_middle, middle_left,
+      bottom_right, bottom_middle, bottom_left
     ]
-    #check all the top row cells
-    top_row = cells.select {|cell| cell.row == 'top'}
-    #check:
-    #is none of them nil?
-    top_row.none? {|cell| cell.content.nil?} &&
+    def not_nill_and_same(cells)
+      #look at their marks..
+      marks = cells.map {|cell| cell.content}
+      #is none of them nil?
+      no_nil_marks = marks.none? {|mark| mark.nil?}
       #are they all the same?
-      top_row.uniq.count == 1 ? true : false
+      all_marks_same = marks.uniq.count == 1 ? true : false
+      no_nil_marks && all_marks_same
+    end
+    
+    rows = ['top', 'middle', 'bottom']
+    for row in rows
+      cells_to_scan = cells.select {|cell| cell.row == row}
+      if not_nill_and_same(cells_to_scan)
+        return true
+      end
+    end
+
+    columns = ['left', 'middle', 'right']
+    for column in columns
+      cells_to_scan = cells.select {|cell| cell.column == column}
+      if not_nill_and_same(cells_to_scan)
+        return true
+      end
+    end
+
+    #diagonals =
+    #forward_slash = /
+    #backslash = \
+    forward_slash_diagonal = [bottom_left, middle_middle, top_right]
+    if not_nill_and_same(forward_slash_diagonal)
+      return true
+    end
+    
+    backslash_diagonal = [bottom_right, middle_middle, top_left]
+    if not_nill_and_same(backslash_diagonal)
+      return true
+    end
+    
+    return false
   end
 end
 
@@ -249,18 +285,36 @@ class Input
   end
 end
 
-moves = ['top_left', 'bottom_left',
-         'top_middle', 'bottom_middle',
-         'top_right', 'bottom_right',
+moves = ['top_left', 'top_middle',
+         'middle_left', 'middle_middle',
+         'bottom_right', 'bottom_middle',
         ]
 
+bad_moves = ['top_left', 'top_left', 'top_right',
+             'middle_left', 'middle_middle',
+             'bottom_right', 'bottom_middle',
+            ]
+forward_slash = ['bottom_left', 'bottom_right',
+                 'middle_middle','top_left',
+                 'top_right',
+                ]
+backslash = ['bottom_right', 'bottom_middle',
+             'middle_middle','top_middle',
+             'top_left',
+                ]
+
+print_welcome_messages
 board = Board.new()
 board.display
-p board.is_game_over
-for move in moves
-  input = Input.new(move)
+#for move in moves
+while not board.is_game_over 
+  input = Input.new(gets)
   board.mark(input.target)
   board.display
-  p board.is_game_over
+  # if board.is_game_over
+  #   puts "game over!"
+  #   break
+  # end
+  #p "is game over? #{board.is_game_over}"
 end
-
+puts "game over!"

@@ -106,18 +106,22 @@ class Board
              else
                puts "tried to mark a bad target at #{self}"
              end
-    
-    #mark the target cell depending on the previous mark
-    if previous_mark == nil || previous_mark == 'O'
-      target.mark_x
-    elsif previous_mark == 'X'
-      target.mark_o
+    #if cell is not yet marked
+    if target.content.nil?
+      #mark the target cell depending on the previous mark
+      if previous_mark == nil || previous_mark == 'O'
+        target.mark_x
+      elsif previous_mark == 'X'
+        target.mark_o
+      else
+        puts "bad last mark at #{self}"
+      end
+      swap_previous_mark
     else
-      puts "bad last mark at #{self}"
+      puts "(board:) attempted to overwrite a cell, try again"
     end
-    
-    swap_previous_mark
   end
+  
   def swap_previous_mark
     case self.previous_mark
     when nil then self.previous_mark = 'X'
@@ -127,7 +131,6 @@ class Board
       p "error swapping previous mark at #{self}"
     end
   end
-
 
   def is_game_over
     cells = [
@@ -154,27 +157,29 @@ class Board
     end
 
     columns = ['left', 'middle', 'right']
-    for column in columns
-      cells_to_scan = cells.select {|cell| cell.column == column}
-      if not_nill_and_same(cells_to_scan)
+      for column in columns
+        cells_to_scan = cells.select {|cell| cell.column == column}
+        if not_nill_and_same(cells_to_scan)
+          return true
+        end
+      end
+
+      #diagonals =
+      #forward_slash = /
+      #backslash = \
+      forward_slash_diagonal = [bottom_left,
+                                middle_middle,
+                                top_right]
+      if not_nill_and_same(forward_slash_diagonal)
         return true
       end
-    end
-
-    #diagonals =
-    #forward_slash = /
-    #backslash = \
-    forward_slash_diagonal = [bottom_left, middle_middle, top_right]
-    if not_nill_and_same(forward_slash_diagonal)
-      return true
-    end
-    
-    backslash_diagonal = [bottom_right, middle_middle, top_left]
-    if not_nill_and_same(backslash_diagonal)
-      return true
-    end
-    
-    return false
+      
+      backslash_diagonal = [bottom_right, middle_middle, top_left]
+      if not_nill_and_same(backslash_diagonal)
+        return true
+      end
+      
+      return false
   end
 end
 

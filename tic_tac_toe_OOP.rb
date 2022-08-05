@@ -23,41 +23,41 @@ class Board
               :middle_left, :middle_middle, :middle_right,
               :bottom_left, :bottom_middle, :bottom_right
 
-  def initialize
-    #a board is up of 9 cells
-    @top_left = Cell.new()
+  def initialize(cell)
+    #a board is made up of 9 cells
+    @top_left = cell.dup
     @top_left.set_row_top
     @top_left.set_column_left
 
-    @top_middle = Cell.new()
+    @top_middle = cell.dup
     @top_middle.set_row_top
     @top_middle.set_column_middle
 
-    @top_right = Cell.new()
+    @top_right = cell.dup
     @top_right.set_row_top
     @top_right.set_column_right
 
-    @middle_left = Cell.new()
+    @middle_left = cell.dup
     @middle_left.set_row_middle
     @middle_left.set_column_left
 
-    @middle_middle = Cell.new()
+    @middle_middle = cell.dup
     @middle_middle.set_row_middle
     @middle_middle.set_column_middle
 
-    @middle_right = Cell.new()
+    @middle_right = cell.dup
     @middle_right.set_row_middle
     @middle_right.set_column_right
 
-    @bottom_left = Cell.new()
+    @bottom_left = cell.dup
     @bottom_left.set_row_bottom
     @bottom_left.set_column_left
 
-    @bottom_middle = Cell.new()
+    @bottom_middle = cell.dup
     @bottom_middle.set_row_bottom
     @bottom_middle.set_column_middle
 
-    @bottom_right = Cell.new()
+    @bottom_right = cell.dup
     @bottom_right.set_row_bottom
     @bottom_right.set_column_right
 
@@ -311,7 +311,7 @@ backslash = ['bottom_right', 'bottom_middle',
                 ]
 
 print_welcome_messages
-board = Board.new()
+board = Board.new(Cell.new())
 board.display
 #for move in moves
 while not board.is_game_over 

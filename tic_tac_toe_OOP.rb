@@ -167,8 +167,8 @@ class Board
     end
 
     #diagonals =
-    #forward_slash = /
-    #backslash = \
+    #  forward_slash = /
+    #  backslash = \
     forward_slash_diagonal = [bottom_left,
                               middle_middle,
                               top_right]
@@ -292,6 +292,7 @@ class Input
   end
 end
 
+#pre-determined moves for testing
 moves = ['top_left', 'top_middle',
          'middle_left', 'middle_middle',
          'bottom_right', 'bottom_middle',
@@ -313,15 +314,11 @@ backslash = ['bottom_right', 'bottom_middle',
 print_welcome_messages
 board = Board.new(Cell.new())
 board.display
-#for move in moves
+#to test: change while loop to
+#  for move in moves 
 while not board.is_game_over 
-  input = Input.new(gets)
+  input = Input.new(gets) #can be a string instead of user input
   board.mark(input.target)
   board.display
-  # if board.is_game_over
-  #   puts "game over!"
-  #   break
-  # end
-  #p "is game over? #{board.is_game_over}"
 end
 puts "game over!"

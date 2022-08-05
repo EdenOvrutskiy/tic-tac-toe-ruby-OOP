@@ -104,9 +104,11 @@ class Board
              when "bottom_middle" then bottom_middle
              when "bottom_left" then bottom_left
              else
-               puts "tried to mark a bad target at #{self}"
+               #puts "tried to mark a bad target at #{self}"
+               puts "bad input: try again (<row>_<column)"
+               return
              end
-    #if cell is not yet marked
+      #if cell is not yet marked
     if target.content.nil?
       #mark the target cell depending on the previous mark
       if previous_mark == nil || previous_mark == 'O'
@@ -157,29 +159,29 @@ class Board
     end
 
     columns = ['left', 'middle', 'right']
-      for column in columns
-        cells_to_scan = cells.select {|cell| cell.column == column}
-        if not_nill_and_same(cells_to_scan)
-          return true
-        end
+    for column in columns
+      cells_to_scan = cells.select {|cell| cell.column == column}
+      if not_nill_and_same(cells_to_scan)
+        return true
       end
+    end
 
-      #diagonals =
-      #forward_slash = /
-      #backslash = \
-      forward_slash_diagonal = [bottom_left,
-                                middle_middle,
-                                top_right]
-      if not_nill_and_same(forward_slash_diagonal)
-        return true
-      end
-      
-      backslash_diagonal = [bottom_right, middle_middle, top_left]
-      if not_nill_and_same(backslash_diagonal)
-        return true
-      end
-      
-      return false
+    #diagonals =
+    #forward_slash = /
+    #backslash = \
+    forward_slash_diagonal = [bottom_left,
+                              middle_middle,
+                              top_right]
+    if not_nill_and_same(forward_slash_diagonal)
+      return true
+    end
+    
+    backslash_diagonal = [bottom_right, middle_middle, top_left]
+    if not_nill_and_same(backslash_diagonal)
+      return true
+    end
+    
+    return false
   end
 end
 

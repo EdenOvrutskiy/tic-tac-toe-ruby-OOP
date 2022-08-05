@@ -249,43 +249,16 @@ end
 
 class Cell
   private
-  attr_writer :content, :row, :column
+  attr_writer :content
 
   public
-  attr_reader :content, :row, :column
+  attr_reader :content
 
   def initialize
     @row = nil
     @column = nil
     @content = nil
   end
-
-  #set row as top, middle or bottom
-  def set_row_top
-    self.row = 'top'
-  end
-
-  def set_row_middle
-    self.row = 'middle'
-  end
-
-  def set_row_bottom
-    self.row = 'bottom'
-  end
-
-  #set column as left, middle or right
-  def set_column_left
-    self.column = 'left'
-  end
-
-  def set_column_middle
-    self.column = 'middle'
-  end
-
-  def set_column_right
-    self.column = 'right'
-  end
-
 
   def mark_x
     if self.content == nil then self.content = 'X'

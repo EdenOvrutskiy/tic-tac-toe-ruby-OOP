@@ -14,54 +14,104 @@ end
 class Board
   private
   attr_accessor :previous_mark
-  # attr_writer :top_left, :top_middle, :top_right,
-  #             :middle_left, :middle_middle, :middle_right,
-  #             :bottom_left, :bottom_middle, :bottom_right
   
   public
   attr_reader :top_left, :top_middle, :top_right,
               :middle_left, :middle_middle, :middle_right,
-              :bottom_left, :bottom_middle, :bottom_right
+              :bottom_left, :bottom_middle, :bottom_right,
+              :table,
+              :top_left_struct, :top_middle_struct,
+              :top_right_struct,
+              :middle_left_struct,
+              :middle_middle_struct, :middle_right_struct,
+              :bottom_left_struct, :bottom_middle_struct,
+              :bottom_right_struct
 
+  Table_cell = Struct.new(:cell, :row, :column)
   def initialize(cell)
-    #a board is made up of 9 cells
-    @top_left = cell.dup
+    #3x3 board
+    rows = [:top, :middle, :bottom]
+    columns = [:left, :middle, :right]
+    @table = []
+    for row in rows
+      for column in columns
+        table_cell = Table_cell.new(cell.dup, row, column)
+        table.push(table_cell)
+      end
+    end
+
+    @top_left_struct = Table_cell.new(cell.dup, :top, :left)
+    @top_left = top_left_struct.cell
+
+    @top_middle_struct = Table_cell.new(cell.dup, :top, :middle)
+    @top_middle = top_middle_struct.cell
+
+    @top_right_struct = Table_cell.new(cell.dup, :top, :right)
+    @top_right = top_right_struct.cell
+
+
+
+    @middle_left_struct = Table_cell.new(cell.dup, :middle, :left)
+    @middle_left = middle_left_struct.cell
+
+
+    @middle_middle_struct = Table_cell.new(
+      cell.dup, :middle, :middle)
+    @middle_middle = middle_middle_struct.cell
+
+    @middle_right_struct = Table_cell.new(cell.dup, :middle, :right)
+    @middle_right = middle_right_struct.cell
+
+
+    @bottom_left_struct = Table_cell.new(cell.dup, :bottom, :left)
+    @bottom_left = bottom_left_struct.cell
+
+    @bottom_middle_struct = Table_cell.new(cell.dup, :bottom, :middle)
+    @bottom_middle = bottom_middle_struct.cell
+
+
+    @bottom_right_struct = Table_cell.new(cell.dup, :bottom, :right)
+    @bottom_right = bottom_right_struct.cell
+
+    @previous_mark = nil #at the beginning, there's no previous mark
+
+    #@top_left = cell.dup
     @top_left.set_row_top
     @top_left.set_column_left
 
-    @top_middle = cell.dup
+
+    #@top_middle = cell.dup
     @top_middle.set_row_top
     @top_middle.set_column_middle
 
-    @top_right = cell.dup
+    #@top_right = cell.dup
     @top_right.set_row_top
     @top_right.set_column_right
 
-    @middle_left = cell.dup
+    #@middle_left = cell.dup
     @middle_left.set_row_middle
     @middle_left.set_column_left
 
-    @middle_middle = cell.dup
+    #@middle_middle = cell.dup
     @middle_middle.set_row_middle
     @middle_middle.set_column_middle
 
-    @middle_right = cell.dup
+    #@middle_right = cell.dup
     @middle_right.set_row_middle
     @middle_right.set_column_right
 
-    @bottom_left = cell.dup
+    #@bottom_left = cell.dup
     @bottom_left.set_row_bottom
     @bottom_left.set_column_left
 
-    @bottom_middle = cell.dup
+    #@bottom_middle = cell.dup
     @bottom_middle.set_row_bottom
     @bottom_middle.set_column_middle
 
-    @bottom_right = cell.dup
+    #@bottom_right = cell.dup
     @bottom_right.set_row_bottom
     @bottom_right.set_column_right
 
-    @previous_mark = nil #at the beginning, there's no previous mark
   end
 
   def display
@@ -108,7 +158,7 @@ class Board
                puts "bad input: try again (<row>_<column)"
                return
              end
-      #if cell is not yet marked
+    #if cell is not yet marked
     if target.content.nil?
       #mark the target cell depending on the previous mark
       if previous_mark == nil || previous_mark == 'O'
@@ -123,7 +173,7 @@ class Board
       puts "(board:) attempted to overwrite a cell, try again"
     end
   end
-  
+      
   def swap_previous_mark
     case self.previous_mark
     when nil then self.previous_mark = 'X'
@@ -132,7 +182,7 @@ class Board
     else
       p "error swapping previous mark at #{self}"
     end
-  end
+      end
 
   def is_game_over
     cells = [
@@ -140,6 +190,7 @@ class Board
       middle_right, middle_middle, middle_left,
       bottom_right, bottom_middle, bottom_left
     ]
+    
     def not_nill_and_same(cells)
       #look at their marks..
       marks = cells.map {|cell| cell.content}
@@ -149,23 +200,33 @@ class Board
       all_marks_same = marks.uniq.count == 1 ? true : false
       no_nil_marks && all_marks_same
     end
-    
-    rows = ['top', 'middle', 'bottom']
+
+    structs = [top_left_struct, top_middle_struct, top_right_struct,
+               middle_left_struct, middle_middle_struct,
+               middle_right_struct, bottom_left_struct,
+               bottom_middle_struct, bottom_right_struct]
+
+
+    rows = [:top, :middle, :bottom]
     for row in rows
-      cells_to_scan = cells.select {|cell| cell.row == row}
+      structs_to_scan = structs.select {|struct| struct.row == row}
+      cells_to_scan = structs_to_scan.map{|struct| struct.cell}
       if not_nill_and_same(cells_to_scan)
+        puts "hi from new loop at is_game_over"
         return true
       end
     end
-
-    columns = ['left', 'middle', 'right']
+    
+    columns = [:left, :middle, :right]
     for column in columns
-      cells_to_scan = cells.select {|cell| cell.column == column}
+      structs_to_scan = structs.select {|struct|
+        struct.column == column}
+      cells_to_scan = structs_to_scan.map{|struct| struct.cell}
       if not_nill_and_same(cells_to_scan)
+        puts "hi from new loop at is_game_over"
         return true
       end
     end
-
     #diagonals =
     #  forward_slash = /
     #  backslash = \

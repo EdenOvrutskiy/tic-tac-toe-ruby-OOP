@@ -25,7 +25,7 @@ class Board
               :middle_left_struct,
               :middle_middle_struct, :middle_right_struct,
               :bottom_left_struct, :bottom_middle_struct,
-              :bottom_right_struct
+              :bottom_right_struct, :table_structs
 
   Table_cell = Struct.new(:cell, :row, :column)
   def initialize(cell)
@@ -73,33 +73,62 @@ class Board
     @bottom_right_struct = Table_cell.new(cell.dup, :bottom, :right)
     @bottom_right = bottom_right_struct.cell
 
+    @table_structs = [
+      top_left_struct, top_middle_struct,
+      top_right_struct,
+      middle_left_struct,
+      middle_middle_struct, middle_right_struct,
+      bottom_left_struct, bottom_middle_struct,
+      bottom_right_struct
+    ]
+    
+            
+
     @previous_mark = nil #at the beginning, there's no previous mark
   end
 
+  def target_cell(row, column)
+    #returns the cell at column, row
+    #filter row
+    row_structs = table_structs.select{|struct| struct.row == row}
+    #filter column
+    column_struct = row_structs.select do |struct|
+      struct.column == column
+    end
+    cell_struct = column_struct.pop
+    cell_object = cell_struct.cell
+  end
+  
   def display
     def printable(cell)
       cell.content.nil? ? '_' : cell.content
     end
+
+    def b_printable(cell)
+      cell.content.nil? ? ' ' : cell.content
+    end
+
     top_row = ''
-    top_row << printable(top_left)
+    top_row << printable(target_cell(:top, :left))
     top_row << '|'
-    top_row << printable(top_middle)
+    top_row << printable(target_cell(:top, :middle))
     top_row << '|'
-    top_row << printable(top_right)
+    top_row << printable(target_cell(:top, :right))
 
     middle_row = ''
-    middle_row << printable(middle_left)
+    middle_row << printable(target_cell(:middle, :left))
     middle_row << '|'
-    middle_row << printable(middle_middle)
+    middle_row << printable(target_cell(:middle, :middle))
     middle_row << '|'
-    middle_row << printable(middle_right)
+    middle_row << printable(target_cell(:middle, :right))
+
 
     bottom_row = ''
-    bottom_row << printable(bottom_left)
+    bottom_row << b_printable(target_cell(:bottom, :left))
     bottom_row << '|'
-    bottom_row << printable(bottom_middle)
+    bottom_row << b_printable(target_cell(:bottom, :middle))
     bottom_row << '|'
-    bottom_row << printable(bottom_right)
+    bottom_row << b_printable(target_cell(:bottom, :right))
 
     puts top_row
     puts middle_row
@@ -138,7 +167,7 @@ class Board
       puts "(board:) attempted to overwrite a cell, try again"
     end
   end
-      
+  
   def swap_previous_mark
     case self.previous_mark
     when nil then self.previous_mark = 'X'
@@ -147,7 +176,7 @@ class Board
     else
       p "error swapping previous mark at #{self}"
     end
-      end
+  end
 
   def is_game_over
     cells = [
@@ -238,13 +267,6 @@ class Cell
 
   def overwrite_error
     puts "error: attempted to overwrite cell #{self}"
-  end
-  
-  def printable
-    if self.content.nil? then '_'
-    else
-      self.content
-    end
   end
 end
 

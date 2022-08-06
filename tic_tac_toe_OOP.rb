@@ -16,13 +16,7 @@ class Board
   attr_accessor :previous_mark
   
   public
-  attr_reader :table,
-              :top_left_struct, :top_middle_struct,
-              :top_right_struct,
-              :middle_left_struct,
-              :middle_middle_struct, :middle_right_struct,
-              :bottom_left_struct, :bottom_middle_struct,
-              :bottom_right_struct
+  attr_reader :table
 
   Table_cell = Struct.new(:cell, :row, :column)
   def initialize(cell)

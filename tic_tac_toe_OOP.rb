@@ -22,7 +22,7 @@ class Board
               :middle_left_struct,
               :middle_middle_struct, :middle_right_struct,
               :bottom_left_struct, :bottom_middle_struct,
-              :bottom_right_struct, :table_structs
+              :bottom_right_struct
 
   Table_cell = Struct.new(:cell, :row, :column)
   def initialize(cell)
@@ -43,8 +43,7 @@ class Board
 
     @top_right_struct = Table_cell.new(cell.dup, :top, :right)
 
-
-
+    
     @middle_left_struct = Table_cell.new(cell.dup, :middle, :left)
 
 
@@ -53,23 +52,11 @@ class Board
 
     @middle_right_struct = Table_cell.new(cell.dup, :middle, :right)
 
-
     @bottom_left_struct = Table_cell.new(cell.dup, :bottom, :left)
 
     @bottom_middle_struct = Table_cell.new(cell.dup, :bottom, :middle)
 
     @bottom_right_struct = Table_cell.new(cell.dup, :bottom, :right)
-
-    @table_structs = [
-      top_left_struct, top_middle_struct,
-      top_right_struct,
-      middle_left_struct,
-      middle_middle_struct, middle_right_struct,
-      bottom_left_struct, bottom_middle_struct,
-      bottom_right_struct
-    ]
-    
-            
 
     @previous_mark = nil #at the beginning, there's no previous mark
   end
@@ -86,7 +73,7 @@ class Board
     begin
       #returns the cell at column, row
       #filter row
-      row_structs = table_structs.select{|struct| struct.row == row}
+      row_structs = table.select{|struct| struct.row == row}
       #filter column
       column_struct = row_structs.select do |struct|
         struct.column == column

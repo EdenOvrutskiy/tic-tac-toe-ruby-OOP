@@ -37,27 +37,6 @@ class Board
       end
     end
 
-    @top_left_struct = Table_cell.new(cell.dup, :top, :left)
-
-    @top_middle_struct = Table_cell.new(cell.dup, :top, :middle)
-
-    @top_right_struct = Table_cell.new(cell.dup, :top, :right)
-
-    
-    @middle_left_struct = Table_cell.new(cell.dup, :middle, :left)
-
-
-    @middle_middle_struct = Table_cell.new(
-      cell.dup, :middle, :middle)
-
-    @middle_right_struct = Table_cell.new(cell.dup, :middle, :right)
-
-    @bottom_left_struct = Table_cell.new(cell.dup, :bottom, :left)
-
-    @bottom_middle_struct = Table_cell.new(cell.dup, :bottom, :middle)
-
-    @bottom_right_struct = Table_cell.new(cell.dup, :bottom, :right)
-
     @previous_mark = nil #at the beginning, there's no previous mark
   end
 
@@ -187,11 +166,7 @@ class Board
       no_nil_marks && all_marks_same
     end
 
-    structs = [top_left_struct, top_middle_struct, top_right_struct,
-               middle_left_struct, middle_middle_struct,
-               middle_right_struct, bottom_left_struct,
-               bottom_middle_struct, bottom_right_struct]
-
+    structs = table
 
     rows = [:top, :middle, :bottom]
     for row in rows

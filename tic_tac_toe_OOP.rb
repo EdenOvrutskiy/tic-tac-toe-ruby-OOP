@@ -74,67 +74,32 @@ class Board
     @bottom_right = bottom_right_struct.cell
 
     @previous_mark = nil #at the beginning, there's no previous mark
-
-    #@top_left = cell.dup
-    @top_left.set_row_top
-    @top_left.set_column_left
-
-
-    #@top_middle = cell.dup
-    @top_middle.set_row_top
-    @top_middle.set_column_middle
-
-    #@top_right = cell.dup
-    @top_right.set_row_top
-    @top_right.set_column_right
-
-    #@middle_left = cell.dup
-    @middle_left.set_row_middle
-    @middle_left.set_column_left
-
-    #@middle_middle = cell.dup
-    @middle_middle.set_row_middle
-    @middle_middle.set_column_middle
-
-    #@middle_right = cell.dup
-    @middle_right.set_row_middle
-    @middle_right.set_column_right
-
-    #@bottom_left = cell.dup
-    @bottom_left.set_row_bottom
-    @bottom_left.set_column_left
-
-    #@bottom_middle = cell.dup
-    @bottom_middle.set_row_bottom
-    @bottom_middle.set_column_middle
-
-    #@bottom_right = cell.dup
-    @bottom_right.set_row_bottom
-    @bottom_right.set_column_right
-
   end
 
   def display
+    def printable(cell)
+      cell.content.nil? ? '_' : cell.content
+    end
     top_row = ''
-    top_row << top_left.printable
+    top_row << printable(top_left)
     top_row << '|'
-    top_row << top_middle.printable
+    top_row << printable(top_middle)
     top_row << '|'
-    top_row << top_right.printable
+    top_row << printable(top_right)
 
     middle_row = ''
-    middle_row << middle_left.printable
+    middle_row << printable(middle_left)
     middle_row << '|'
-    middle_row << middle_middle.printable
+    middle_row << printable(middle_middle)
     middle_row << '|'
-    middle_row << middle_right.printable
+    middle_row << printable(middle_right)
 
     bottom_row = ''
-    bottom_row << bottom_left.printable
+    bottom_row << printable(bottom_left)
     bottom_row << '|'
-    bottom_row << bottom_middle.printable
+    bottom_row << printable(bottom_middle)
     bottom_row << '|'
-    bottom_row << bottom_right.printable
+    bottom_row << printable(bottom_right)
 
     puts top_row
     puts middle_row
@@ -212,7 +177,6 @@ class Board
       structs_to_scan = structs.select {|struct| struct.row == row}
       cells_to_scan = structs_to_scan.map{|struct| struct.cell}
       if not_nill_and_same(cells_to_scan)
-        puts "hi from new loop at is_game_over"
         return true
       end
     end
@@ -255,8 +219,6 @@ class Cell
   attr_reader :content
 
   def initialize
-    @row = nil
-    @column = nil
     @content = nil
   end
 
@@ -279,8 +241,7 @@ class Cell
   end
   
   def printable
-    if self.content.nil?
-      self.row == 'bottom' ? ' ' : '_'
+    if self.content.nil? then '_'
     else
       self.content
     end

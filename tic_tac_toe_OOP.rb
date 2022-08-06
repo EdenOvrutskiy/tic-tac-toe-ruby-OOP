@@ -149,33 +149,37 @@ class Board
       |pair| target_cell(pair[0], pair[1])
     end
     
-    def not_nill_and_same(cells)
+    def do_structs_share_mark?(structs)
+      cells = extract_cells(structs)
+      do_cells_share_mark?(cells)
+    end
+    
+    def do_cells_share_mark?(cells)
       #look at their marks..
       marks = cells.map {|cell| cell.content}
       #is none of them nil?
-      no_nil_marks = marks.none? {|mark| mark.nil?}
+      no_empty_marks = marks.none? {|mark| mark.nil?}
       #are they all the same?
       all_marks_same = marks.uniq.count == 1 ? true : false
-      no_nil_marks && all_marks_same
+      no_empty_marks && all_marks_same
     end
 
-    structs = table
-    def structs_share_mark(structs)
-      cells_to_scan = structs.map{|struct| struct.cell}
-      not_nill_and_same(cells_to_scan)
+    def extract_cells(structs)
+      structs.map{|struct| struct.cell}
     end
+    
 
     rows = [:top, :middle, :bottom]
     for row in rows
-      structs_to_scan = structs.select {|struct| struct.row == row}
-      return true if structs_share_mark(structs_to_scan)
+      structs_to_scan = table.select {|struct| struct.row == row}
+      return true if do_structs_share_mark?(structs_to_scan)
     end
     
     columns = [:left, :middle, :right]
     for column in columns
-      structs_to_scan = structs.select {|struct|
+      structs_to_scan = table.select {|struct|
         struct.column == column}
-      return true if structs_share_mark(structs_to_scan)
+      return true if do_structs_share_mark?(structs_to_scan)
     end
     #diagonals =
     #  forward_slash = /
@@ -190,7 +194,7 @@ class Board
     
     for win_condition in [forward_slash_diagonal,
                           backslash_diagonal]
-      if not_nill_and_same(win_condition)
+      if do_cells_share_mark?(win_condition)
         return true
       end
     end

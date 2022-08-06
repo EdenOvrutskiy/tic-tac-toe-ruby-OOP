@@ -100,39 +100,37 @@ class Board
   end
   
   def display
-    def printable(cell)
-      cell.content.nil? ? '_' : cell.content
+    def printable(cell, row)
+      content = cell.content
+      if content.nil?
+        row == :bottom ? ' ' : '_'
+      else
+        content
+      end
     end
-
-    def b_printable(cell)
-      cell.content.nil? ? ' ' : cell.content
+    
+    separator = '|'
+    newline = "\n"
+    row_column_pairs = [
+      [:top, :left],    [:top,    :middle],    [:top, :right],
+      [:middle, :left], [:middle, :middle], [:middle, :right],
+      [:bottom, :left], [:bottom, :middle], [:bottom, :right]
+    ]
+    last_row = :bottom
+    last_column = :right
+    for pair in row_column_pairs
+      row = pair[0]
+      column = pair[1]
+      cell = target_cell(row, column)
+      print printable(cell,row)
+      newline_or_separator = case column
+                             when last_column then newline
+                             else
+                               separator
+                             end
+      print newline_or_separator
     end
-
-    top_row = ''
-    top_row << printable(target_cell(:top, :left))
-    top_row << '|'
-    top_row << printable(target_cell(:top, :middle))
-    top_row << '|'
-    top_row << printable(target_cell(:top, :right))
-
-    middle_row = ''
-    middle_row << printable(target_cell(:middle, :left))
-    middle_row << '|'
-    middle_row << printable(target_cell(:middle, :middle))
-    middle_row << '|'
-    middle_row << printable(target_cell(:middle, :right))
-
-
-    bottom_row = ''
-    bottom_row << b_printable(target_cell(:bottom, :left))
-    bottom_row << '|'
-    bottom_row << b_printable(target_cell(:bottom, :middle))
-    bottom_row << '|'
-    bottom_row << b_printable(target_cell(:bottom, :right))
-
-    puts top_row
-    puts middle_row
-    puts bottom_row
+    
   end
 
   def mark(target)
@@ -178,66 +176,66 @@ class Board
     end
   end
 
-  def is_game_over
-    cells = [
-      top_right, top_middle, top_left,
-      middle_right, middle_middle, middle_left,
-      bottom_right, bottom_middle, bottom_left
-    ]
-    
-    def not_nill_and_same(cells)
-      #look at their marks..
-      marks = cells.map {|cell| cell.content}
-      #is none of them nil?
-      no_nil_marks = marks.none? {|mark| mark.nil?}
-      #are they all the same?
-      all_marks_same = marks.uniq.count == 1 ? true : false
-      no_nil_marks && all_marks_same
-    end
+      def is_game_over
+        cells = [
+          top_right, top_middle, top_left,
+          middle_right, middle_middle, middle_left,
+          bottom_right, bottom_middle, bottom_left
+        ]
+        
+        def not_nill_and_same(cells)
+          #look at their marks..
+          marks = cells.map {|cell| cell.content}
+          #is none of them nil?
+          no_nil_marks = marks.none? {|mark| mark.nil?}
+          #are they all the same?
+          all_marks_same = marks.uniq.count == 1 ? true : false
+          no_nil_marks && all_marks_same
+        end
 
-    structs = [top_left_struct, top_middle_struct, top_right_struct,
-               middle_left_struct, middle_middle_struct,
-               middle_right_struct, bottom_left_struct,
-               bottom_middle_struct, bottom_right_struct]
+        structs = [top_left_struct, top_middle_struct, top_right_struct,
+                   middle_left_struct, middle_middle_struct,
+                   middle_right_struct, bottom_left_struct,
+                   bottom_middle_struct, bottom_right_struct]
 
 
-    rows = [:top, :middle, :bottom]
-    for row in rows
-      structs_to_scan = structs.select {|struct| struct.row == row}
-      cells_to_scan = structs_to_scan.map{|struct| struct.cell}
-      if not_nill_and_same(cells_to_scan)
-        return true
+        rows = [:top, :middle, :bottom]
+        for row in rows
+          structs_to_scan = structs.select {|struct| struct.row == row}
+          cells_to_scan = structs_to_scan.map{|struct| struct.cell}
+          if not_nill_and_same(cells_to_scan)
+            return true
+          end
+        end
+        
+        columns = [:left, :middle, :right]
+        for column in columns
+          structs_to_scan = structs.select {|struct|
+            struct.column == column}
+          cells_to_scan = structs_to_scan.map{|struct| struct.cell}
+          if not_nill_and_same(cells_to_scan)
+            puts "hi from new loop at is_game_over"
+            return true
+          end
+        end
+        #diagonals =
+        #  forward_slash = /
+        #  backslash = \
+        forward_slash_diagonal = [bottom_left,
+                                  middle_middle,
+                                  top_right]
+        if not_nill_and_same(forward_slash_diagonal)
+          return true
+        end
+        
+        backslash_diagonal = [bottom_right, middle_middle, top_left]
+        if not_nill_and_same(backslash_diagonal)
+          return true
+        end
+        
+        return false
       end
-    end
-    
-    columns = [:left, :middle, :right]
-    for column in columns
-      structs_to_scan = structs.select {|struct|
-        struct.column == column}
-      cells_to_scan = structs_to_scan.map{|struct| struct.cell}
-      if not_nill_and_same(cells_to_scan)
-        puts "hi from new loop at is_game_over"
-        return true
-      end
-    end
-    #diagonals =
-    #  forward_slash = /
-    #  backslash = \
-    forward_slash_diagonal = [bottom_left,
-                              middle_middle,
-                              top_right]
-    if not_nill_and_same(forward_slash_diagonal)
-      return true
-    end
-    
-    backslash_diagonal = [bottom_right, middle_middle, top_left]
-    if not_nill_and_same(backslash_diagonal)
-      return true
-    end
-    
-    return false
-  end
-end
+     end
 
 
 class Cell

@@ -91,7 +91,6 @@ class Board
                              end
       print newline_or_separator
     end
-    
   end
 
   def mark(target)
@@ -161,24 +160,22 @@ class Board
     end
 
     structs = table
+    def structs_share_mark(structs)
+      cells_to_scan = structs.map{|struct| struct.cell}
+      not_nill_and_same(cells_to_scan)
+    end
 
     rows = [:top, :middle, :bottom]
     for row in rows
       structs_to_scan = structs.select {|struct| struct.row == row}
-      cells_to_scan = structs_to_scan.map{|struct| struct.cell}
-      if not_nill_and_same(cells_to_scan)
-        return true
-      end
+      return true if structs_share_mark(structs_to_scan)
     end
     
     columns = [:left, :middle, :right]
     for column in columns
       structs_to_scan = structs.select {|struct|
         struct.column == column}
-      cells_to_scan = structs_to_scan.map{|struct| struct.cell}
-      if not_nill_and_same(cells_to_scan)
-        return true
-      end
+      return true if structs_share_mark(structs_to_scan)
     end
     #diagonals =
     #  forward_slash = /
@@ -201,6 +198,7 @@ class Board
     return false
   end
 end
+
 
 
 class Cell
@@ -289,7 +287,7 @@ forward_slash = ['bottom_left', 'bottom_right',
 backslash = ['bottom_right', 'bottom_middle',
              'middle_middle','top_middle',
              'top_left',
-                ]
+            ]
 
 print_welcome_messages
 board = Board.new(Cell.new())

@@ -31,16 +31,10 @@ class Board
     @previous_mark = nil #at the beginning, there's no previous mark
   end
 
+  
   def target_cell(row, column)
+    #takes in symbols representing row / column
     #returns the cell object at column, row of table.
-    if row.is_a? String
-      row = row.to_sym
-    end
-    
-    if column.is_a? String
-      column = column.to_sym
-    end
-    
     begin
       #select the table structs that have the specified row
       row_structs = table.select{|struct| struct.row == row}
@@ -58,7 +52,7 @@ class Board
            "column: #{column}"
     end
   end
-    
+
   def display
     def printable(cell, row)
       if not cell.marked?
@@ -95,16 +89,27 @@ class Board
     #mark with X / O depending on what the previous mark is.
 
     #expected input format: "row_column" (string)
-    
-    begin
-      row_column_pair = target.split('_')
-    rescue
-      puts "mark could not parse target input"
-      return false
+    def process_user_input(input)
+      #takes string input from user
+      #returns valid cell-object
+      begin
+        processed_input = input
+                            .to_s
+                            .chomp
+                            .downcase
+                            .split('_')
+        row, column = processed_input
+        row = row.to_sym
+        column = column.to_sym
+        target = target_cell(row, column)
+      rescue
+        puts "mark could not parse target input"
+        false
+      end
     end
-
-    row, column = row_column_pair
-    target = target_cell(row, column)
+    
+    target = process_user_input(target)
+    return unless target
     
     begin
       #if cell is not yet marked
@@ -125,7 +130,7 @@ class Board
       puts "failed to mark cell"
     end
   end
-  
+
   def swap_previous_mark
     case self.previous_mark
     when nil then self.previous_mark = 'X'
@@ -142,9 +147,6 @@ class Board
       [:middle, :left], [:middle, :middle], [:middle, :right],
       [:bottom, :left], [:bottom, :middle], [:bottom, :right]
     ]
-    cells = row_column_pairs.map do
-      |pair| target_cell(pair[0], pair[1])
-    end
     
     def do_structs_share_mark?(structs)
       cells = extract_cells(structs)
@@ -177,6 +179,7 @@ class Board
         struct.column == column}
       return true if do_structs_share_mark?(structs_to_scan)
     end
+
     #diagonals =
     #  forward_slash = /
     #  backslash = \
@@ -198,7 +201,6 @@ class Board
     return false
   end
 end
-
 
 
 class Cell
@@ -236,43 +238,6 @@ class Cell
 end
 
 
-class Input
-  #initialized with input (gets or other data)
-  #can tell you if it's valid or not
-  #can tell you which cell the input is targetting
-  private
-  attr_reader :input
-  attr_writer :target
-  
-  public
-  attr_reader :target
-  def initialize(data)
-    
-    def process_input(input)
-      processed_input = input
-                          .to_s
-                          .chomp
-                          .downcase
-    end
-    
-    @input = process_input(data)
-    @target = nil
-  end
-
-  def valid?
-    valid_inputs =
-      [
-        "top_left", "top_middle", "top_right",
-        "middle_left", "middle_middle", "middle_right",
-        "bottom_left", "bottom_middle", "bottom_right"
-      ]
-    valid_inputs.include?(input) ? true : false
-  end
-
-  def target
-    self.valid? ? input : nil
-  end
-end
 
 #pre-determined moves for testing
 moves = ['top_left', 'top_middle',
@@ -299,8 +264,7 @@ board.display
 #to test: change while loop to
 #  for move in moves 
 while not board.is_game_over 
-  input = Input.new(gets) #can be a string instead of user input
-  board.mark(input.target)
+  board.mark(gets)
   board.display
 end
 puts "game over!"

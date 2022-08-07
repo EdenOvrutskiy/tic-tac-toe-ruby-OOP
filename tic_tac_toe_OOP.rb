@@ -1,6 +1,5 @@
 require 'pry'
 
-#procedural, no sense changing
 def print_welcome_messages
   puts "welcome to tic tac toe"
   puts "select a tile with the following syntax:"
@@ -9,15 +8,13 @@ def print_welcome_messages
   puts "for example: 'top_middle'"
 end
 
-##OOP:
 
 class Board
   private
   attr_accessor :previous_mark
+  attr_reader :table
   
   public
-  attr_reader :table
-
   Table_cell = Struct.new(:cell, :row, :column)
   def initialize(cell)
     #3x3 board
@@ -35,6 +32,7 @@ class Board
   end
 
   def target_cell(row, column)
+    #returns the cell object at column, row of table.
     if row.is_a? String
       row = row.to_sym
     end
@@ -44,14 +42,15 @@ class Board
     end
     
     begin
-      #returns the cell at column, row
-      #filter row
+      #select the table structs that have the specified row
       row_structs = table.select{|struct| struct.row == row}
-      #filter column
+      #select the table struct that has the specified column
       column_struct = row_structs.select do |struct|
         struct.column == column
       end
+      #it's in an array, pop it out
       cell_struct = column_struct.pop
+      #target the cell object in the struct
       cell_object = cell_struct.cell
     rescue
       
@@ -62,11 +61,10 @@ class Board
     
   def display
     def printable(cell, row)
-      content = cell.content
-      if content.nil?
+      if not cell.marked?
         row == :bottom ? ' ' : '_'
       else
-        content
+        cell.content
       end
     end
     
@@ -80,8 +78,7 @@ class Board
     last_row = :bottom
     last_column = :right
     for pair in row_column_pairs
-      row = pair[0]
-      column = pair[1]
+      row, column = pair
       cell = target_cell(row, column)
       print printable(cell,row)
       newline_or_separator = case column
@@ -94,26 +91,26 @@ class Board
   end
 
   def mark(target)
-    #translate target's string input to an object
-    #mark said cell depending on what the previous mark was.
+    #map the string "target" into the correct cell on the board
+    #mark with X / O depending on what the previous mark is.
 
-    #expected input format: "row_column" string
+    #expected input format: "row_column" (string)
+    
     begin
       row_column_pair = target.split('_')
     rescue
       puts "mark could not parse target input"
       return false
     end
-    row = row_column_pair[0]
-    column = row_column_pair[1]
 
+    row, column = row_column_pair
     target = target_cell(row, column)
     
-    #if cell is not yet marked
     begin
-      if target.content.nil?
+      #if cell is not yet marked
+      if not target.marked?
         #mark the target cell depending on the previous mark
-        if previous_mark == nil || previous_mark == 'O'
+        if previous_mark.nil? || previous_mark == 'O'
           target.mark_x
         elsif previous_mark == 'X'
           target.mark_o
@@ -155,13 +152,12 @@ class Board
     end
     
     def do_cells_share_mark?(cells)
-      #look at their marks..
-      marks = cells.map {|cell| cell.content}
-      #is none of them nil?
-      no_empty_marks = marks.none? {|mark| mark.nil?}
+      #check if cells are marked
+      cells_marked = cells.all? {|cell| cell.marked?}
       #are they all the same?
+      marks = cells.map {|cell| cell.content}
       all_marks_same = marks.uniq.count == 1 ? true : false
-      no_empty_marks && all_marks_same
+      cells_marked && all_marks_same
     end
 
     def extract_cells(structs)
@@ -217,17 +213,21 @@ class Cell
   end
 
   def mark_x
-    if self.content == nil then self.content = 'X'
+    if not self.marked? then self.content = 'X'
     else
       overwrite_error
     end
   end
 
   def mark_o
-    if self.content == nil then self.content = 'O'
+    if not self.marked? then self.content = 'O'
     else
       overwrite_error
     end
+  end
+
+  def marked?
+    self.content.nil? ? false : true
   end
 
   def overwrite_error
